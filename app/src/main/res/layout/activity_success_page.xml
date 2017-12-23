@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.appsinventiv.classifiedads.Activities.SuccessPage">
+    <ImageView
+        android:layout_width="120dp"
+        android:src="@drawable/success"
+        android:layout_height="120dp"
+        android:layout_marginTop="52dp"
+        android:id="@+id/imageView2"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/viewad"
+        android:layout_alignStart="@+id/viewad"
+        android:layout_below="@+id/imageView2"
+        android:layout_marginTop="33dp"
+        android:text="Ad has been successfully posted!"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/viewad"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:text="View ad"
+        android:layout_below="@+id/textView2"
+        android:layout_alignStart="@+id/postnew" />
+
+    <Button
+        android:id="@+id/sharead"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Share ad"
+        android:layout_below="@+id/viewad"
+        android:layout_alignStart="@+id/viewad" />
+
+    <Button
+        android:id="@+id/postnew"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Post new Ad"
+        android:layout_below="@+id/sharead"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/back"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Back to homepage"
+        android:layout_below="@+id/postnew"
+        android:layout_centerHorizontal="true" />
+
+
+</RelativeLayout>
