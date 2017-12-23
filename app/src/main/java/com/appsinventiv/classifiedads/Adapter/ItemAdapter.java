@@ -129,7 +129,7 @@ public class ItemAdapter extends RecyclerView.Adapter {
             ((ItemViewHolder) holder).time.setText(getFormattedDate(ctx,model.getTime()));
             Glide.with(ctx).load(model.getPicUrl()).into((((ItemViewHolder) holder).thumbnail));
 
-
+ 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
