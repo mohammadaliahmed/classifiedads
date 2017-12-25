@@ -2,6 +2,7 @@ package com.appsinventiv.classifiedads.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 
+import com.appsinventiv.classifiedads.Activities.AdPage;
 import com.appsinventiv.classifiedads.Model.AdDetails;
 import com.appsinventiv.classifiedads.Model.Item;
 import com.appsinventiv.classifiedads.Interface.OnLoadMoreListener;
@@ -129,11 +131,15 @@ public class ItemAdapter extends RecyclerView.Adapter {
             ((ItemViewHolder) holder).time.setText(getFormattedDate(ctx,model.getTime()));
             Glide.with(ctx).load(model.getPicUrl()).into((((ItemViewHolder) holder).thumbnail));
 
- 
+
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(activity, ""+adId.getTime(), Toast.LENGTH_SHORT).show();
+                    Intent i =new Intent(ctx,AdPage.class);
+
+                    i.putExtra("adId",""+adId.getTime());
+                    ctx.startActivity(i);
+//
                 }
             });
 
