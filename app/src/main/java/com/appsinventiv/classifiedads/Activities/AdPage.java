@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.appsinventiv.classifiedads.Adapter.SliderAdapter;
+import com.appsinventiv.classifiedads.Classes.MyDataClass;
 import com.appsinventiv.classifiedads.Model.AdDetails;
 import com.appsinventiv.classifiedads.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -29,6 +30,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AdPage extends AppCompatActivity {
     TextView title, price, time;
@@ -38,6 +41,7 @@ public class AdPage extends AppCompatActivity {
     ArrayList<String> picUrls = new ArrayList<String>();
 
     SliderAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,12 +87,11 @@ public class AdPage extends AppCompatActivity {
                 });
     }
 
-    public void initViewpager(String id) {
+    public void initViewpager(final String id) {
+
 
         mViewPager=findViewById(R.id.viewPager);
-        adapter=new SliderAdapter(this);
-        mViewPager.setAdapter(adapter);
-
+        adapter=new SliderAdapter(AdPage.this);
         db.collection("ads")
                 .document(id)
                 .collection("pictures")
@@ -97,8 +100,30 @@ public class AdPage extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
-                            Toast.makeText(AdPage.this, ""+task.getResult(), Toast.LENGTH_SHORT).show();
-//                            task.getResult();
+                            for (final DocumentSnapshot document : task.getResult()) {
+                                final String documentId=document.getId();
+//                                Toast.makeText(AdPage.this, ""+document.getId(), Toast.LENGTH_SHORT).show();
+                                db.collection("ads").document(id)
+                                        .collection("pictures")
+                                        .document(documentId)
+                                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+
+//                                               picUrls.add(""+documentSnapshot.getData())
+                                                Map<String, Object> pictureUrls = documentSnapshot.getData();
+                                                Map.Entry<String,Object> entry = pictureUrls.entrySet().iterator().next();
+                                                String key= entry.getKey();
+                                                String value= (String) entry.getValue();
+                                                picUrls.add(""+value);
+                                                Toast.makeText(AdPage.this, ""+value, Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+
+                                mViewPager.setAdapter(adapter);
+                            }
+
+
 
 
                         }

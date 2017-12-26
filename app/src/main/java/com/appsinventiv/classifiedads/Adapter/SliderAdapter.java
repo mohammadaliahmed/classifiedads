@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.appsinventiv.classifiedads.R;
+import com.bumptech.glide.Glide;
 
 /**
  * Created by AliAh on 25/12/2017.
@@ -41,7 +42,11 @@ public class SliderAdapter extends PagerAdapter {
         layoutInflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view=layoutInflater.inflate(R.layout.product_slider,container,false);
         ImageView imageView=view.findViewById(R.id.slider_image);
-        imageView.setImageResource(images[position]);
+        Glide.with(context)
+                .load("https://firebasestorage.googleapis.com/v0/b/firestoreclassified.appspot.com/o/Photos%2F3fde666b2cf530de?alt=media&token=be9b456d-23bc-4715-99b9-731c2cba5f21")
+                .into(imageView);
+//        imageView.setImageResource(images[position]);
+
         container.addView(view);
 
         return view;
