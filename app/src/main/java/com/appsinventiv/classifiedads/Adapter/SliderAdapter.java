@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 import com.appsinventiv.classifiedads.R;
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
+
 /**
  * Created by AliAh on 25/12/2017.
  */
@@ -20,14 +22,29 @@ public class SliderAdapter extends PagerAdapter {
     Context context;
     LayoutInflater layoutInflater;
     int[] images={R.drawable.abcd,R.drawable.ab,R.drawable.abc};
+  ;ArrayList<String> pictures;
 
-    public SliderAdapter(Context context) {
+
+    public SliderAdapter(Context context,ArrayList<String> pictures) {
         this.context = context;
+        this.pictures=pictures;
+    }
+    public void addUrls(String url){
+        pictures.add(url);
+        notifyDataSetChanged();
+    }
+
+    public ArrayList<String> getPictures() {
+        return pictures;
+    }
+
+    public void setPictures(ArrayList<String> pictures) {
+        this.pictures = pictures;
     }
 
     @Override
     public int getCount() {
-        return images.length;
+        return pictures.size();
     }
 
     @Override
@@ -43,8 +60,9 @@ public class SliderAdapter extends PagerAdapter {
         View view=layoutInflater.inflate(R.layout.product_slider,container,false);
         ImageView imageView=view.findViewById(R.id.slider_image);
         Glide.with(context)
-                .load("https://firebasestorage.googleapis.com/v0/b/firestoreclassified.appspot.com/o/Photos%2F3fde666b2cf530de?alt=media&token=be9b456d-23bc-4715-99b9-731c2cba5f21")
+                .load(pictures.get(position))
                 .into(imageView);
+
 //        imageView.setImageResource(images[position]);
 
         container.addView(view);

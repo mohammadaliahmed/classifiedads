@@ -91,7 +91,9 @@ public class AdPage extends AppCompatActivity {
 
 
         mViewPager=findViewById(R.id.viewPager);
-        adapter=new SliderAdapter(AdPage.this);
+        adapter=new SliderAdapter(AdPage.this,picUrls);
+        mViewPager.setAdapter(adapter);
+
         db.collection("ads")
                 .document(id)
                 .collection("pictures")
@@ -115,12 +117,14 @@ public class AdPage extends AppCompatActivity {
                                                 Map.Entry<String,Object> entry = pictureUrls.entrySet().iterator().next();
                                                 String key= entry.getKey();
                                                 String value= (String) entry.getValue();
-                                                picUrls.add(""+value);
-                                                Toast.makeText(AdPage.this, ""+value, Toast.LENGTH_SHORT).show();
+//                                                picUrls.add(""+value);
+                                                adapter.addUrls(""+value);
+//                                                Toast.makeText(AdPage.this, ""+value, Toast.LENGTH_SHORT).show();
                                             }
                                         });
+//                                adapter.setPictures(picUrls);
 
-                                mViewPager.setAdapter(adapter);
+
                             }
 
 
