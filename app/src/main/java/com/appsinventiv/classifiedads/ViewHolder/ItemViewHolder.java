@@ -16,14 +16,14 @@ public class ItemViewHolder extends RecyclerView.ViewHolder {
 
 
     public TextView title;
-    public TextView desc;
+    public TextView price;
     public TextView time;
     public ImageView thumbnail;
     public ItemViewHolder(View itemView) {
         super(itemView);
 
         title = (TextView) itemView.findViewById(R.id.titleItem);
-        desc = (TextView) itemView.findViewById(R.id.price);
+        price = (TextView) itemView.findViewById(R.id.price);
         time = (TextView) itemView.findViewById(R.id.time);
         thumbnail=(ImageView)itemView.findViewById(R.id.thumbnail);
     }

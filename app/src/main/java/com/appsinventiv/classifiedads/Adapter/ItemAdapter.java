@@ -22,6 +22,7 @@ import com.appsinventiv.classifiedads.ViewHolder.ItemViewHolder;
 import com.appsinventiv.classifiedads.ViewHolder.ProgressBarViewHolder;
 import com.bumptech.glide.Glide;
 
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.List;
 
@@ -125,9 +126,11 @@ public class ItemAdapter extends RecyclerView.Adapter {
         final AdDetails model = itemList.get(position);
 
         if (getViewType == ITEM_VIEW) {
+            DecimalFormat formatter = new DecimalFormat("##,###,###");
+            String formatedPrice = formatter.format(model.getPrice());
             final AdDetails adId=itemList.get(position);
             ((ItemViewHolder) holder).title.setText(model.getTitle());
-            ((ItemViewHolder) holder).desc.setText("Rs "+model.getPrice());
+            ((ItemViewHolder) holder).price.setText("Rs "+formatedPrice);
             ((ItemViewHolder) holder).time.setText(getFormattedDate(ctx,model.getTime()));
             Glide.with(ctx).load(model.getPicUrl()).into((((ItemViewHolder) holder).thumbnail));
 

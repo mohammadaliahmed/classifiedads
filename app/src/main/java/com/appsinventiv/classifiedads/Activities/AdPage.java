@@ -3,20 +3,15 @@ package com.appsinventiv.classifiedads.Activities;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
 import android.text.format.DateFormat;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.appsinventiv.classifiedads.Adapter.SliderAdapter;
-import com.appsinventiv.classifiedads.Classes.MyDataClass;
 import com.appsinventiv.classifiedads.Model.AdDetails;
 import com.appsinventiv.classifiedads.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,16 +23,15 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Map;
 
 public class AdPage extends AppCompatActivity {
-    TextView title, price, time;
+    TextView title, price, time,city,description;
     FirebaseFirestore db;
     ViewPager mViewPager;
-    int layouts[]={R.drawable.ab,R.drawable.abc,R.drawable.abcd};
     ArrayList<String> picUrls = new ArrayList<String>();
 
     SliderAdapter adapter;
@@ -56,6 +50,10 @@ public class AdPage extends AppCompatActivity {
         title = findViewById(R.id.title);
         price = findViewById(R.id.price);
         time = findViewById(R.id.time);
+        city=findViewById(R.id.city);
+        description=findViewById(R.id.description);
+
+
         mViewPager = (ViewPager) findViewById(R.id.viewPager);
 
 
@@ -76,11 +74,16 @@ public class AdPage extends AppCompatActivity {
                     @Override
                     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                         if (documentSnapshot != null) {
+
                             AdDetails adDetails = documentSnapshot.toObject(AdDetails.class);
                             if (adDetails != null) {
+                                DecimalFormat formatter = new DecimalFormat("#,###,###");
+                                String formatedPrice = formatter.format(adDetails.getPrice());
                                 title.setText(adDetails.getTitle());
-                                price.setText("" + adDetails.getPrice());
+                                price.setText("Rs "+formatedPrice );
                                 time.setText(getFormattedDate(AdPage.this, adDetails.getTime()));
+                                city.setText(""+adDetails.getCity());
+                                description.setText(""+adDetails.getDescription());
                             }
                         }
                     }

@@ -158,7 +158,7 @@ public class SubmitAd extends AppCompatActivity {
 //        pushRef.setValue(new AdDetails(Adtitle, AdDescription,"lahore","","yes","vehicles","cars","toyota",time,userId,AdPrice));
 
         db.collection("ads").document(""+time)
-                .set(new AdDetails(Adtitle, AdDescription,"lahore","","yes","vehicles","cars","toyota",time,userId,AdPrice))
+                .set(new AdDetails(Adtitle, AdDescription,"lahore","","yes","vehicles","cars","toyota",time,userId,AdPrice,0))
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

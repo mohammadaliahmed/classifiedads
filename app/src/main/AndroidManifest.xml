@@ -23,6 +23,29 @@
         <activity
             android:name=".Activities.MainActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".Activities.AddItem"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activities.SubmitAd"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activities.SuccessPage"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activities.AdPage"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activities.Register"
+            android:screenOrientation="portrait">
+
+        </activity>
+        <activity
+            android:name=".Activities.Login"
+            android:screenOrientation="portrait" />
+        <activity android:name=".Activities.Splash"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,10 +53,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.AddItem" />
-        <activity android:name=".Activities.SubmitAd" />
-        <activity android:name=".Activities.SuccessPage" />
-        <activity android:name=".Activities.AdPage"></activity>
     </application>
 
 </manifest>

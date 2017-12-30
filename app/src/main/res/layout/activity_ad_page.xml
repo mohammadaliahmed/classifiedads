@@ -7,15 +7,25 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     tools:context="com.appsinventiv.classifiedads.Activities.AdPage">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+
+
     <android.support.v7.widget.CardView
         android:id="@+id/cardView"
 
         android:layout_width="match_parent"
-        android:layout_height="350dp"
+        android:layout_height="370dp"
         card_view:cardElevation="2dp"
         card_view:cardCornerRadius="5dp"
         android:layout_margin="3dp"
-        android:padding="10dp"
 
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -40,7 +50,8 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:textSize="20sp"
-        android:text="TextView" />
+        android:maxLines="2"
+        android:text="TextViesfsdffsdfsdfsdfsdfsdffsdfdsfdsfdsfdsfdsfdsfw" />
 
     <TextView
         android:id="@+id/price"
@@ -61,47 +72,107 @@
         android:layout_alignStart="@+id/price"
         android:layout_below="@+id/price"
         android:text="TextView" />
-</RelativeLayout>
-    </android.support.v7.widget.CardView>
 
-    <!--<android.support.v7.widget.CardView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="200dp"-->
-        <!--card_view:cardElevation="2dp"-->
-        <!--android:layout_margin="3dp"-->
-        <!--android:padding="10dp"-->
-        <!--android:layout_alignLeft="@+id/cardView"-->
-        <!--android:layout_alignStart="@+id/cardView"-->
-        <!--android:layout_below="@+id/cardView">-->
-        <!---->
-    <!--</android.support.v7.widget.CardView>-->
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_alignParentBottom="true"
-    android:layout_height="wrap_content">
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button" />
-
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:text="Button" />
-
-    <Button
-        android:id="@+id/button4"
+    <TextView
+        android:id="@+id/city"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:text="Button" />
-
+        android:layout_below="@+id/price"
+        android:layout_marginEnd="11dp"
+        android:layout_marginRight="11dp"
+        android:text="lahore" />
 </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/descriptioncard"
+        android:layout_width="match_parent"
+        android:minHeight="100dp"
+        android:layout_height="wrap_content"
+        card_view:cardElevation="2dp"
+        card_view:cardCornerRadius="5dp"
+        android:layout_margin="5dp"
+
+        android:layout_below="@+id/cardView">
+        <TextView
+            android:id="@+id/description"
+            android:padding="15dp"
+            android:text="adsasdasdasdasdadasadasda\ndsffdfdfgsdfdsfdsfsdfdsfsdfsdfdsfdsfsdfdsdsfshfghfhjfjhfhgdsfsd\n\n\nsdfsdfsdfsdfsdfdsfsdfsd\nsfsdfs\nsdfsdfsd\nsfsdfsds"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </android.support.v7.widget.CardView>
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:minHeight="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/usercard"
+                card_view:cardElevation="2dp"
+                card_view:cardCornerRadius="5dp"
+                android:layout_margin="5dp"
+                android:layout_below="@+id/descriptioncard">
+
+                <TextView
+                    android:id="@+id/username"
+                    android:padding="15dp"
+                    android:textSize="20dp"
+                    android:text="Usama Saleem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </android.support.v7.widget.CardView>
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:minHeight="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/adcard"
+                card_view:cardElevation="2dp"
+                card_view:cardCornerRadius="5dp"
+                android:layout_margin="5dp"
+                android:layout_below="@+id/usercard">
+<ImageView
+    android:src="@drawable/ad"
+    android:padding="5dp"
+    android:layout_width="match_parent"
+    android:layout_height="250dp"
+    android:layout_marginBottom="50dp"/>
+
+            </android.support.v7.widget.CardView>
+        </RelativeLayout>
+    </ScrollView>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:background="#e9e9e9"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/call"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="55dp"
+            android:layout_marginStart="55dp"
+            android:text="SMS" />
+
+        <Button
+            android:id="@+id/sms"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="61dp"
+            android:layout_marginRight="61dp"
+            android:text="Call" />
+
+
+
+    </RelativeLayout>
+
 </RelativeLayout>
