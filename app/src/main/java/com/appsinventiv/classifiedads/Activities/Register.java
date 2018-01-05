@@ -1,6 +1,8 @@
 package com.appsinventiv.classifiedads.Activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -124,9 +126,8 @@ String fullname,username,email,password,phone,city;
                                                         @Override
                                                         public void onSuccess(Void aVoid) {
                                                             Toast.makeText(Register.this, "Thankyou for registering", Toast.LENGTH_SHORT).show();
-                                                            Intent i = new Intent(Register.this, MainActivity.class);
-                                                            startActivity(i);
-                                                            finish();
+                                                            sharedPref(username,""+phone,"no",city);
+                                                            launchHomeScreen();
                                                         }
                                                     }).addOnFailureListener(new OnFailureListener() {
                                                 @Override
@@ -151,13 +152,23 @@ String fullname,username,email,password,phone,city;
 
 
     }
+    public void sharedPref(String userName,String phoneNumber,String active,String city){
+        SharedPreferences pref = getSharedPreferences("userDetails", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("username", userName);
+        editor.putString("active",active );
+        editor.putString("phone",phoneNumber);
+        editor.putString("city",city);
+
+        editor.apply();
+    }
     public boolean isConnected() throws InterruptedException, IOException {
         String command = "ping -c 1 google.com";
         return (Runtime.getRuntime().exec(command).waitFor() == 0);
     }
     private void launchHomeScreen() {
         prefManager.setFirstTimeLaunch(false);
-        startActivity(new Intent(Register.this, MainActivity.class));
+        startActivity(new Intent(Register.this, CategoryChooser.class));
 
         finish();
     }

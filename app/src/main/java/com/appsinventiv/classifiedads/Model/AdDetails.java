@@ -5,15 +5,17 @@ package com.appsinventiv.classifiedads.Model;
  */
 
 public class AdDetails {
-    String title, description, city, picUrl, isActive, mainCategory, childCategory, subChild;
-    long time, userId, price, views;
+    String title, description, username, phone, city, picUrl, isActive, mainCategory, childCategory, subChild;
+    long time, price, views;
 
     public AdDetails() {
     }
 
-    public AdDetails(String title, String description, String city, String picUrl, String isActive, String mainCategory, String childCategory, String subChild, long time, long userId, long price, long views) {
+    public AdDetails(String title, String description, String username, String phone, String city, String picUrl, String isActive, String mainCategory, String childCategory, String subChild, long time, long price, long views) {
         this.title = title;
         this.description = description;
+        this.username = username;
+        this.phone = phone;
         this.city = city;
         this.picUrl = picUrl;
         this.isActive = isActive;
@@ -21,7 +23,6 @@ public class AdDetails {
         this.childCategory = childCategory;
         this.subChild = subChild;
         this.time = time;
-        this.userId = userId;
         this.price = price;
         this.views = views;
     }
@@ -40,6 +41,22 @@ public class AdDetails {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getCity() {
@@ -96,14 +113,6 @@ public class AdDetails {
 
     public void setTime(long time) {
         this.time = time;
-    }
-
-    public long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
     }
 
     public long getPrice() {

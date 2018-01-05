@@ -6,5 +6,5 @@ package com.appsinventiv.classifiedads.Utils;
 
 public class Constants {
 
-    public static int FIRESTORE_LIMIT=5;
+    public static int FIRESTORE_LIMIT=6;
 }

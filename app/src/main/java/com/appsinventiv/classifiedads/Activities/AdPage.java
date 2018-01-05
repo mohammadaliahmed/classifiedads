@@ -1,7 +1,9 @@
 package com.appsinventiv.classifiedads.Activities;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -9,15 +11,21 @@ import android.os.Bundle;
 
 import android.text.format.DateFormat;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.appsinventiv.classifiedads.Adapter.SliderAdapter;
 import com.appsinventiv.classifiedads.Model.AdDetails;
 import com.appsinventiv.classifiedads.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -26,15 +34,21 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Map;
 
 public class AdPage extends AppCompatActivity {
-    TextView title, price, time,city,description;
+    TextView title, price, time, city, description, views,username;
     FirebaseFirestore db;
     ViewPager mViewPager;
     ArrayList<String> picUrls = new ArrayList<String>();
 
     SliderAdapter adapter;
+    long viewCount;
+    String adId;
+    ProgressDialog progressDialog;
+    Button call,sms;
+    String phoneNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +59,17 @@ public class AdPage extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-
-
+        progressDialog = new ProgressDialog(AdPage.this);
         title = findViewById(R.id.title);
         price = findViewById(R.id.price);
         time = findViewById(R.id.time);
-        city=findViewById(R.id.city);
-        description=findViewById(R.id.description);
+        city = findViewById(R.id.city);
+        username = findViewById(R.id.username);
+
+        description = findViewById(R.id.description);
+        views = findViewById(R.id.views);
+        call=findViewById(R.id.call);
+        sms=findViewById(R.id.sms);
 
 
         mViewPager = (ViewPager) findViewById(R.id.viewPager);
@@ -59,7 +77,7 @@ public class AdPage extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         Intent intent = getIntent();
-        String adId = intent.getStringExtra("adId");
+        adId = intent.getStringExtra("adId");
 
         init(adId);
         initViewpager(adId);
@@ -68,33 +86,79 @@ public class AdPage extends AppCompatActivity {
     }
 
     public void init(String id) {
+        progressDialog.setMessage("Working");
+        progressDialog.setTitle("Please wait");
+        progressDialog.show();
         db.collection("ads")
                 .document(id)
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                        if (documentSnapshot != null) {
+                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot != null) {
 
-                            AdDetails adDetails = documentSnapshot.toObject(AdDetails.class);
-                            if (adDetails != null) {
-                                DecimalFormat formatter = new DecimalFormat("#,###,###");
-                                String formatedPrice = formatter.format(adDetails.getPrice());
-                                title.setText(adDetails.getTitle());
-                                price.setText("Rs "+formatedPrice );
-                                time.setText(getFormattedDate(AdPage.this, adDetails.getTime()));
-                                city.setText(""+adDetails.getCity());
-                                description.setText(""+adDetails.getDescription());
-                            }
-                        }
+                    AdDetails adDetails = documentSnapshot.toObject(AdDetails.class);
+                    if (adDetails != null) {
+                        progressDialog.dismiss();
+                        DecimalFormat formatter = new DecimalFormat("#,###,###");
+                        String formatedPrice = formatter.format(adDetails.getPrice());
+                        title.setText(adDetails.getTitle());
+                        price.setText("Rs " + formatedPrice);
+                        time.setText(getFormattedDate(AdPage.this, adDetails.getTime()));
+                        city.setText("" + adDetails.getCity());
+                        description.setText("" + adDetails.getDescription());
+                        username.setText(adDetails.getUsername());
+
+                        viewCount = adDetails.getViews();
+                        phoneNumber=adDetails.getPhone();
+                        views.setText("Views: " + adDetails.getViews());
+                        viewCount++;
                     }
-                });
+                }
+
+            }
+        });
+//                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+//
+//
+//                    }
+//
+//                });
+        call.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i=new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+phoneNumber));
+                startActivity(i);
+            }
+        });
+        sms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i=new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:"+phoneNumber));
+                startActivity(i);
+            }
+        });
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        updateViews();
+        finish();
     }
 
     public void initViewpager(final String id) {
 
 
-        mViewPager=findViewById(R.id.viewPager);
-        adapter=new SliderAdapter(AdPage.this,picUrls);
+        mViewPager = findViewById(R.id.viewPager);
+        adapter = new SliderAdapter(AdPage.this, picUrls);
         mViewPager.setAdapter(adapter);
 
         db.collection("ads")
@@ -104,9 +168,9 @@ public class AdPage extends AppCompatActivity {
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             for (final DocumentSnapshot document : task.getResult()) {
-                                final String documentId=document.getId();
+                                final String documentId = document.getId();
 //                                Toast.makeText(AdPage.this, ""+document.getId(), Toast.LENGTH_SHORT).show();
                                 db.collection("ads").document(id)
                                         .collection("pictures")
@@ -117,27 +181,17 @@ public class AdPage extends AppCompatActivity {
 
 //                                               picUrls.add(""+documentSnapshot.getData())
                                                 Map<String, Object> pictureUrls = documentSnapshot.getData();
-                                                Map.Entry<String,Object> entry = pictureUrls.entrySet().iterator().next();
-                                                String key= entry.getKey();
-                                                String value= (String) entry.getValue();
+                                                Map.Entry<String, Object> entry = pictureUrls.entrySet().iterator().next();
+                                                String key = entry.getKey();
+                                                String value = (String) entry.getValue();
 //                                                picUrls.add(""+value);
-                                                adapter.addUrls(""+value);
-//                                                Toast.makeText(AdPage.this, ""+value, Toast.LENGTH_SHORT).show();
+                                                adapter.addUrls("" + value);
                                             }
                                         });
-//                                adapter.setPictures(picUrls);
-
-
                             }
-
-
-
-
                         }
                     }
                 });
-
-
     }
 
     public String getFormattedDate(Context context, long smsTimeInMilis) {
@@ -160,9 +214,27 @@ public class AdPage extends AppCompatActivity {
         }
     }
 
+    public void updateViews() {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("views", viewCount);
+        db.collection("ads").document(adId).update(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                return;
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+                return;
+            }
+        });
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
+            updateViews();
             finish();
         }
         return super.onOptionsItemSelected(item);

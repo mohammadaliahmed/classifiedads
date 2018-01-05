@@ -1,5 +1,7 @@
 package com.appsinventiv.classifiedads.Activities;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
@@ -71,10 +74,11 @@ public class SubmitAd extends AppCompatActivity {
     EditText title, price, description;
     DatabaseReference mDatabase;
     ImageView picture;
-    ArrayList<String> selectPaths;
 
     ArrayList<String> imageUrl;
-    String currentDateTimeString;
+
+    SharedPreferences userPref;
+    String username,city,phonenumber;
 
     List<Uri> mSelected;
 
@@ -83,15 +87,16 @@ public class SubmitAd extends AppCompatActivity {
 
     FirebaseFirestore db;
     String adId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_submit_ad);
-        db=FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
         mStorageRef = FirebaseStorage.getInstance().getReference();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         imageUrl = new ArrayList<String>();
-        adCover=new ArrayList<String>();
+        adCover = new ArrayList<String>();
 
         picture = (ImageView) findViewById(R.id.picture);
 
@@ -108,7 +113,11 @@ public class SubmitAd extends AppCompatActivity {
             }
         });
 
+        userPref = getSharedPreferences("userDetails", Context.MODE_PRIVATE);
 
+        username=userPref.getString("username","");
+        phonenumber=userPref.getString("phone","");
+        city=userPref.getString("city","");
 
         pickPicture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,15 +142,16 @@ public class SubmitAd extends AppCompatActivity {
         // Check which request we're responding to
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
             mSelected = Matisse.obtainResult(data);
-            for (Uri img:
+            for (Uri img :
                     mSelected) {
-                imageUrl.add(compressImage(""+img));
+                imageUrl.add(compressImage("" + img));
             }
         }
 
         super.onActivityResult(requestCode, resultCode, data);
 
     }
+
     void submitAd() {
 
         String Adtitle = title.getText().toString(),
@@ -149,16 +159,30 @@ public class SubmitAd extends AppCompatActivity {
         long AdPrice = Long.parseLong(price.getText().toString());
         long userId = 2054;
 
-        long time= System.currentTimeMillis();
+        long time = System.currentTimeMillis();
 
 
-        DatabaseReference pushRef=mDatabase.child("ads").child(""+time);
+        DatabaseReference pushRef = mDatabase.child("ads").child("" + time);
 
 //        String pushKey = pushRef.getKey();
 //        pushRef.setValue(new AdDetails(Adtitle, AdDescription,"lahore","","yes","vehicles","cars","toyota",time,userId,AdPrice));
 
-        db.collection("ads").document(""+time)
-                .set(new AdDetails(Adtitle, AdDescription,"lahore","","yes","vehicles","cars","toyota",time,userId,AdPrice,0))
+        db.collection("ads").document("" + time)
+                .set(new AdDetails
+                        (
+                                Adtitle,
+                                AdDescription,
+                                username,
+                                ""+phonenumber,
+                                city,
+                                "",
+                                "yes",
+                                "vehicles",
+                                "cars",
+                                "toyota",
+                                time,
+                                AdPrice,
+                                0))
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -176,13 +200,13 @@ public class SubmitAd extends AppCompatActivity {
         for (final String img : imageUrl
                 ) {
 
-            putPictures(img, ""+time);
+            putPictures(img, "" + time);
         }
 
 
 //        mDatabase.child("picUrl").setValue(adCover.get(0));
 //        Toast.makeText(SubmitAd.this, "Done", Toast.LENGTH_SHORT).show();
-        Intent i=new Intent(SubmitAd.this,SuccessPage.class);
+        Intent i = new Intent(SubmitAd.this, SuccessPage.class);
         startActivity(i);
         finish();
     }
@@ -208,11 +232,11 @@ public class SubmitAd extends AppCompatActivity {
 
                         String randomId = Long.toHexString(Double.doubleToLongBits(Math.random()));
                         Map<String, Object> data1 = new HashMap<>();
-                        data1.put(randomId, ""+downloadUrl);
+                        data1.put(randomId, "" + downloadUrl);
 
                         db.collection("ads").document(key).collection("pictures").add(data1);
-                        adCover.add(""+downloadUrl);
-                        db.collection("ads").document(key).update("picUrl",""+downloadUrl);
+                        adCover.add("" + downloadUrl);
+                        db.collection("ads").document(key).update("picUrl", "" + downloadUrl);
 
                     }
                 })

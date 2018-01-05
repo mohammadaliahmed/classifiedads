@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.appsinventiv.classifiedads.R;
 import com.bumptech.glide.Glide;
@@ -62,6 +63,13 @@ public class SliderAdapter extends PagerAdapter {
         Glide.with(context)
                 .load(pictures.get(position))
                 .into(imageView);
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(context, "clicked", Toast.LENGTH_SHORT).show();
+            }
+        });
 
 //        imageView.setImageResource(images[position]);
 

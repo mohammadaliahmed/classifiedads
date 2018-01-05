@@ -1,6 +1,8 @@
 package com.appsinventiv.classifiedads.Activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.appsinventiv.classifiedads.Category.MainCategory;
 import com.appsinventiv.classifiedads.Classes.PrefManager;
 import com.appsinventiv.classifiedads.Model.User;
 import com.appsinventiv.classifiedads.R;
@@ -108,8 +111,9 @@ public class Login extends AppCompatActivity {
                                     User user = dataSnapshot.child("" + username).getValue(User.class);
                                     if (user != null) {
                                         if(user.getPassword().equals(password)){
-                                            Intent i=new Intent(Login.this,MainActivity.class);
-                                            startActivity(i);
+//                                            Intent i=new Intent(Login.this,MainActivity.class);
+//                                            startActivity(i);
+                                            sharedPref(user.getUsername(),""+user.getPhone(),user.getActive(),user.getCity());
                                             launchHomeScreen();
                                         }
                                         else {
@@ -143,10 +147,19 @@ public class Login extends AppCompatActivity {
         String command = "ping -c 1 google.com";
         return (Runtime.getRuntime().exec(command).waitFor() == 0);
     }
+    public void sharedPref(String userName,String phoneNumber,String active,String city){
+        SharedPreferences pref = getSharedPreferences("userDetails", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("username", userName);
+        editor.putString("active",active );
+        editor.putString("phone",phoneNumber);
+        editor.putString("city",city);
 
+        editor.apply();
+    }
     private void launchHomeScreen() {
         prefManager.setFirstTimeLaunch(false);
-        startActivity(new Intent(Login.this, MainActivity.class));
+        startActivity(new Intent(Login.this,MainCategory.class));
 
         finish();
     }

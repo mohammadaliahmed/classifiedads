@@ -24,7 +24,7 @@
             android:name=".Activities.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Activities.AddItem"
             android:screenOrientation="portrait" />
@@ -39,13 +39,12 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".Activities.Register"
-            android:screenOrientation="portrait">
-
-        </activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Activities.Login"
             android:screenOrientation="portrait" />
-        <activity android:name=".Activities.Splash"
+        <activity
+            android:name=".Activities.Splash"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -53,6 +52,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Activities.CategoryChooser" />
+        <activity android:name=".Activities.AdPictures" />
+        <activity android:name=".Category.ChildCategory" />
+        <activity android:name=".Category.MainCategory" />
+        <activity android:name=".Category.SubChild"></activity>
     </application>
 
 </manifest>

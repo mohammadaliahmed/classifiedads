@@ -1,5 +1,6 @@
 package com.appsinventiv.classifiedads.Activities;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,9 +10,12 @@ import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -22,6 +26,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.appsinventiv.classifiedads.Adapter.ItemAdapter;
 import com.appsinventiv.classifiedads.Model.AdDetails;
@@ -37,6 +43,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -51,6 +59,9 @@ public class MainActivity extends AppCompatActivity
     DocumentSnapshot lastVisible;
     DocumentSnapshot prevItemVisible;
     SwipeRefreshLayout mSwipeRefreshLayout;
+    String searchTerm = "";
+    SearchView searchView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,7 +93,7 @@ public class MainActivity extends AppCompatActivity
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new ItemAdapter(itemList, MainActivity.this,MainActivity.this, recyclerView);
+        adapter = new ItemAdapter(itemList, MainActivity.this, MainActivity.this, recyclerView);
         recyclerView.setAdapter(adapter);
 
         db = FirebaseFirestore.getInstance();
@@ -110,11 +121,11 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-    FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent openAdd = new Intent(MainActivity.this,SubmitAd.class);
+                Intent openAdd = new Intent(MainActivity.this, SubmitAd.class);
                 startActivity(openAdd);
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
@@ -130,63 +141,79 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
+
     public void refreshItems() {
         itemList.clear();
         loadData();
         onItemsLoadComplete();
     }
+
     public void onItemsLoadComplete() {
         adapter.notifyDataSetChanged();
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        refreshItems();
-    }
-
-    public void loadData(){
+    public void loadData() {
         query = db.collection("ads");
-        query.orderBy("time", com.google.firebase.firestore.Query.Direction.DESCENDING)
+        query
+                .orderBy("price")
+
+
+//                .whereEqualTo("city","lahore")
+                .whereGreaterThan("price", 0)
+                .whereLessThan("price", 999999999)
                 .limit(Constants.FIRESTORE_LIMIT)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot querySnapshot, FirebaseFirestoreException e) {
-                for (DocumentSnapshot snapshot : querySnapshot.getDocuments()){
-                    AdDetails model = snapshot.toObject(AdDetails.class);
-                    itemList.add(model);
-                    adapter.notifyDataSetChanged();
+                    @Override
+                    public void onEvent(QuerySnapshot querySnapshot, FirebaseFirestoreException e) {
+                        if (querySnapshot != null) {
+                            for (DocumentSnapshot snapshot : querySnapshot.getDocuments()) {
+                                AdDetails model = snapshot.toObject(AdDetails.class);
+                                if(model.getTitle().contains(searchTerm)) {
+                                    itemList.add(model);
+                                }
+                                    adapter.notifyDataSetChanged();
 
-                    lastVisible = querySnapshot.getDocuments().get(querySnapshot.size() -1);
-                }
-            }
-        });
+                                lastVisible = querySnapshot.getDocuments().get(querySnapshot.size() - 1);
+
+                            }
+                        }
+                    }
+                });
     }
-    public void loadMoreData(){
-        com.google.firebase.firestore.Query next = FirebaseFirestore.getInstance()
+
+    public void loadMoreData() {
+        com.google.firebase.firestore.Query next = db
                 .collection("ads")
-                .orderBy("time", com.google.firebase.firestore.Query.Direction.DESCENDING)
+//                .whereEqualTo("city","lahore")
+                .whereGreaterThan("price", 0)
+                .whereLessThan("price", 999999999)
                 .startAfter(lastVisible)
                 .limit(Constants.FIRESTORE_LIMIT);
+
         next.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(final QuerySnapshot querySnapshot, FirebaseFirestoreException e) {
                 if (e == null) {
+                    if (querySnapshot != null) {
+                        for (DocumentSnapshot snapshot : querySnapshot.getDocuments()) {
 
-                    for (DocumentSnapshot snapshot : querySnapshot.getDocuments()) {
+                            AdDetails model = snapshot.toObject(AdDetails.class);
+                            if(model.getTitle().contains(searchTerm)) {
+                                itemList.add(model);
+                            }
+                                adapter.notifyDataSetChanged();
 
-                        AdDetails model = snapshot.toObject(AdDetails.class);
-                        itemList.add(model);
-                        adapter.notifyDataSetChanged();
-                        lastVisible = querySnapshot.getDocuments().get(querySnapshot.size() - 1);
-                        adapter.setIsLoading(false);
-
+                            lastVisible = querySnapshot.getDocuments().get(querySnapshot.size() - 1);
+                            adapter.setIsLoading(false);
+                        }
                     }
-
-                    com.google.firebase.firestore.Query next = FirebaseFirestore.getInstance()
+                    com.google.firebase.firestore.Query next = db
                             .collection("ads")
-                            .orderBy("time", com.google.firebase.firestore.Query.Direction.DESCENDING);
+//                            .whereEqualTo("city","lahore")
+                            .whereGreaterThan("price", 0)
+                            .whereLessThan("price", 999999999);
+
                     next.addSnapshotListener(new EventListener<QuerySnapshot>() {
                         @Override
                         public void onEvent(QuerySnapshot querySnapshot2, FirebaseFirestoreException e) {
@@ -194,7 +221,7 @@ public class MainActivity extends AppCompatActivity
 
                                 prevItemVisible = querySnapshot2.getDocuments().get(querySnapshot2.size() - 1);
 
-                                if (prevItemVisible.getId().equals(lastVisible.getId())){
+                                if (prevItemVisible.getId().equals(lastVisible.getId())) {
                                     adapter.isFullLoaded(true);
                                 }
                             }
@@ -217,7 +244,10 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        } if (!searchView.isIconified()) {
+            searchView.setIconified(true);
+//            findViewById(R.id.default_title).setVisibility(View.VISIBLE);
+        }else {
             super.onBackPressed();
         }
     }
@@ -226,8 +256,51 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        if (searchItem != null) {
+            searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+            searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+                @Override
+                public boolean onClose() {
+                    //some operation
+                    return false;
+                }
+            });
+            searchView.setOnSearchClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //some operation
+                }
+            });
+            EditText searchPlate = (EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+            searchPlate.setHint("Search");
+            View searchPlateView = searchView.findViewById(android.support.v7.appcompat.R.id.search_plate);
+            searchPlateView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
+            // use this method for search process
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    // use this method when query submitted
+                    searchTerm=query;
+                    refreshItems();
+                    Toast.makeText(MainActivity.this, query, Toast.LENGTH_SHORT).show();
+
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    // use this method for auto complete search process
+                    return false;
+                }
+            });
+            SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        }
+        return super.onCreateOptionsMenu(menu);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
