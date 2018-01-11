@@ -10,13 +10,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
 
 import com.appsinventiv.classifiedads.Activities.AdPage;
 import com.appsinventiv.classifiedads.Model.AdDetails;
-import com.appsinventiv.classifiedads.Model.Item;
-import com.appsinventiv.classifiedads.Interface.OnLoadMoreListener;
 import com.appsinventiv.classifiedads.R;
 import com.appsinventiv.classifiedads.ViewHolder.ItemViewHolder;
 import com.appsinventiv.classifiedads.ViewHolder.ProgressBarViewHolder;
@@ -27,102 +23,38 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * Created by maliahmed on 15/12/2017.
+ * Created by AliAh on 09/01/2018.
  */
 
-public class ItemAdapter extends RecyclerView.Adapter {
+public class SearchItemsAdapter extends RecyclerView.Adapter{
 
     List<AdDetails> itemList;
     Activity activity;
     Context ctx;
     LayoutInflater mLInflater;
-
     private static final int ITEM_VIEW = 0;
-    private static final int LOADING_VIEW = 1;
 
-    private int visibleThreshold = 200;
-    private int lastVisibleItem, totalItemCount;
-
-    private OnLoadMoreListener onLoadMoreListener;
-    boolean isLoading;
-    boolean isAllLoaded = false;
-
-
-
-    public ItemAdapter(List<AdDetails> itemList, Activity activity, Context ctx, RecyclerView recyclerView) {
+    public SearchItemsAdapter(List<AdDetails> itemList, Activity activity, Context ctx, RecyclerView recyclerView) {
         this.itemList = itemList;
         this.activity = activity;
         this.ctx = ctx;
 
         mLInflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
-
-//            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//                @Override
-//                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//                    super.onScrolled(recyclerView, dx, dy);
-//
-//                    LinearLayoutManager llm = (LinearLayoutManager) recyclerView.getLayoutManager();
-//
-//                    lastVisibleItem = llm.findLastVisibleItemPosition();
-//                    totalItemCount = llm.getItemCount();
-//                    Log.i("isLoading", String.valueOf(isLoading));
-//                    Log.i("isAllLoaded", String.valueOf(isAllLoaded));
-//                    Log.i("isLast", String.valueOf(lastVisibleItem));
-//
-//
-//                    if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold) && !isAllLoaded) {
-//                        if (onLoadMoreListener != null) {
-//                            onLoadMoreListener.onLoadMore();
-//                        }
-//                        isLoading = true;
-//                    }
-//
-//                }
-//            });
-
-
-        }
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        return itemList.get(position) != null ? ITEM_VIEW : LOADING_VIEW;
-    }
-
-    public void setOnLoadMore(OnLoadMoreListener onLoadMore) {
-        onLoadMoreListener = onLoadMore;
-    }
-
-
-    public void setIsLoading(boolean param) {
-        isLoading = param;
-    }
-
-    public void isFullLoaded(boolean param) {
-        isAllLoaded = param;
-    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        RecyclerView.ViewHolder vh;
         if (viewType == ITEM_VIEW) {
             View v = mLInflater.inflate(R.layout.item_layout, parent, false);
             return new ItemViewHolder(v);
         }
-//        else if (viewType == LOADING_VIEW) {
-//            View v1 = mLInflater.inflate(R.layout.progressbar_item, parent, false);
-//            return new ProgressBarViewHolder(v1);
-//        }
-
         return null;
     }
 
-
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         int getViewType = holder.getItemViewType();
         final AdDetails model = itemList.get(position);
 
@@ -148,9 +80,8 @@ public class ItemAdapter extends RecyclerView.Adapter {
             });
 
         }
-//
-    }
 
+    }
     public String getFormattedDate(Context context, long smsTimeInMilis) {
         Calendar smsTime = Calendar.getInstance();
         smsTime.setTimeInMillis(smsTimeInMilis);
@@ -170,7 +101,6 @@ public class ItemAdapter extends RecyclerView.Adapter {
             return DateFormat.format("dd MMM , h:mm aa", smsTime).toString();
         }
     }
-
 
     @Override
     public int getItemCount() {

@@ -39,8 +39,8 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         register = (Button) findViewById(R.id.register);
         login = (Button) findViewById(R.id.login);
-        e_username=(EditText) findViewById(R.id.username);
-        e_password=(EditText)findViewById(R.id.password);
+        e_username = (EditText) findViewById(R.id.username);
+        e_password = (EditText) findViewById(R.id.password);
 
 
         mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
@@ -94,72 +94,60 @@ public class Login extends AppCompatActivity {
     }
 
     private void userLogin() {
-        try {
-            if (isConnected()) {
-                if (e_username.getText().toString().length() == 0) {
-                    e_username.setError("Cannot be null");
-                } else if (e_password.getText().toString().length() == 0) {
-                    e_password.setError("Cannot be null");
-                } else {
-                    username = e_username.getText().toString();
-                    password = e_password.getText().toString();
-                    if (userlist.contains(username)) {
-                        mDatabase.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                if (dataSnapshot != null) {
-                                    User user = dataSnapshot.child("" + username).getValue(User.class);
-                                    if (user != null) {
-                                        if(user.getPassword().equals(password)){
+
+        if (e_username.getText().toString().length() == 0) {
+            e_username.setError("Cannot be null");
+        } else if (e_password.getText().toString().length() == 0) {
+            e_password.setError("Cannot be null");
+        } else {
+            username = e_username.getText().toString();
+            password = e_password.getText().toString();
+            if (userlist.contains(username)) {
+                mDatabase.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot != null) {
+                            User user = dataSnapshot.child("" + username).getValue(User.class);
+                            if (user != null) {
+                                if (user.getPassword().equals(password)) {
 //                                            Intent i=new Intent(Login.this,MainActivity.class);
 //                                            startActivity(i);
-                                            sharedPref(user.getUsername(),""+user.getPhone(),user.getActive(),user.getCity());
-                                            launchHomeScreen();
-                                        }
-                                        else {
-                                            Toast.makeText(Login.this, "Wrong password\nPlease try again", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
+                                    sharedPref(user.getUsername(), "" + user.getPhone(), user.getActive(), user.getCity());
+                                    launchHomeScreen();
+                                } else {
+                                    Toast.makeText(Login.this, "Wrong password\nPlease try again", Toast.LENGTH_SHORT).show();
                                 }
                             }
+                        }
+                    }
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-                    }else {
-                        Toast.makeText(this, "Username does not exist\nPlease signup", Toast.LENGTH_SHORT).show();
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
                     }
-                }
+                });
             } else {
-                Toast.makeText(this, "No internet connection\nPlease turn on wifi", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Username does not exist\nPlease signup", Toast.LENGTH_SHORT).show();
+
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
     }
 
-    public boolean isConnected() throws InterruptedException, IOException {
-        String command = "ping -c 1 google.com";
-        return (Runtime.getRuntime().exec(command).waitFor() == 0);
-    }
-    public void sharedPref(String userName,String phoneNumber,String active,String city){
+    public void sharedPref(String userName, String phoneNumber, String active, String city) {
         SharedPreferences pref = getSharedPreferences("userDetails", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putString("username", userName);
-        editor.putString("active",active );
-        editor.putString("phone",phoneNumber);
-        editor.putString("city",city);
+        editor.putString("active", active);
+        editor.putString("phone", phoneNumber);
+        editor.putString("city", city);
 
         editor.apply();
     }
+
     private void launchHomeScreen() {
         prefManager.setFirstTimeLaunch(false);
-        startActivity(new Intent(Login.this,MainCategory.class));
+        startActivity(new Intent(Login.this, MainActivity.class));
 
         finish();
     }

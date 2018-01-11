@@ -38,7 +38,7 @@ String category="main";
         itemList.add(categoryItem);
         categoryItem=new CategoryItem("Mobile Phones");
         itemList.add(categoryItem);
-        categoryItem=new CategoryItem("Job");
+
         itemList.add(categoryItem);
 
         adapter.notifyDataSetChanged();

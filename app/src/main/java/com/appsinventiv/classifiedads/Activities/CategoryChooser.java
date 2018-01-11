@@ -34,10 +34,16 @@ public class CategoryChooser extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
         lv = (ListView) findViewById(R.id.list);
-        String[] data = getIntent().getStringArrayExtra("strArray");
+        String[] data=getIntent().getStringArrayExtra("strArray");
+        String[] data2=getIntent().getStringArrayExtra("strArray2");
+
+
+
         AdapterView.OnItemClickListener clickListener = null;
 
         // If no data received means this is the first activity
+
+
         if (data == null) {
             data = groupArray;
             clickListener = new AdapterView.OnItemClickListener() {
@@ -65,6 +71,62 @@ public class CategoryChooser extends AppCompatActivity {
                 }
             };
 
+        }else if(data==getIntent().getStringArrayExtra("strArray")){
+            Toast.makeText(this, "here", Toast.LENGTH_SHORT).show();
+//           data=getIntent().getStringArrayExtra("strArray");
+           data=list3;
+            clickListener = new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+                    Intent intent = new Intent(CategoryChooser.this, CategoryChooser.class);
+                    if(position==0) {
+                        intent.putExtra("strArray2", list3);
+                        Toast.makeText(CategoryChooser.this, "list" + position, Toast.LENGTH_SHORT).show();
+                        startActivity(intent);
+
+                    }else if(position==1){
+                        intent.putExtra("strArray2", list3);
+                        Toast.makeText(CategoryChooser.this, "list" + position, Toast.LENGTH_SHORT).show();
+                        startActivity(intent);
+
+                    }
+                    else if(position==2){
+                        intent.putExtra("strArray2", list3);
+                        Toast.makeText(CategoryChooser.this, "list" + position, Toast.LENGTH_SHORT).show();
+                        startActivity(intent);
+
+                    }
+                }
+            };
+        }else if(data==getIntent().getStringArrayExtra("strArray")){
+            Toast.makeText(this, "here 2", Toast.LENGTH_SHORT).show();
+//            data=getIntent().getStringArrayExtra("strArray2");
+            data=list3;
+            clickListener = new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+                    Intent intent = new Intent(CategoryChooser.this, CategoryChooser.class);
+                    if(position==0) {
+                        intent.putExtra("strArray3", list3);
+                        Toast.makeText(CategoryChooser.this, "list" + position, Toast.LENGTH_SHORT).show();
+                        startActivity(intent);
+
+                    }else if(position==1){
+                        intent.putExtra("strArray3", list3);
+                        Toast.makeText(CategoryChooser.this, "list" + position, Toast.LENGTH_SHORT).show();
+                        startActivity(intent);
+
+                    }
+                    else if(position==2){
+                        intent.putExtra("strArray3", list3);
+                        Toast.makeText(CategoryChooser.this, "list" + position, Toast.LENGTH_SHORT).show();
+                        startActivity(intent);
+
+                    }
+                }
+            };
         }
 
         ArrayAdapter adapter = new ArrayAdapter<String>(this,

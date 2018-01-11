@@ -3,6 +3,7 @@
     package="com.appsinventiv.classifiedads">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -52,11 +53,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.CategoryChooser" />
         <activity android:name=".Activities.AdPictures" />
         <activity android:name=".Category.ChildCategory" />
         <activity android:name=".Category.MainCategory" />
-        <activity android:name=".Category.SubChild"></activity>
+        <activity android:name=".Category.SubChild" />
+        <activity android:name=".Activities.CategoryChooser" />
+        <activity android:name=".Activities.SearchResults" />
+        <activity
+            android:name=".Activities.Filters"
+            android:label="@string/title_activity_filters"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan"></activity>
     </application>
 
 </manifest>

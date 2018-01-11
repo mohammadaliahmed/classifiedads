@@ -23,6 +23,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
@@ -35,10 +41,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AdPage extends AppCompatActivity {
-    TextView title, price, time, city, description, views,username;
+    TextView title, price, time, city, description, views, username;
     FirebaseFirestore db;
     ViewPager mViewPager;
     ArrayList<String> picUrls = new ArrayList<String>();
@@ -47,8 +54,10 @@ public class AdPage extends AppCompatActivity {
     long viewCount;
     String adId;
     ProgressDialog progressDialog;
-    Button call,sms;
+    Button call, sms;
     String phoneNumber;
+
+    DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +77,12 @@ public class AdPage extends AppCompatActivity {
 
         description = findViewById(R.id.description);
         views = findViewById(R.id.views);
-        call=findViewById(R.id.call);
-        sms=findViewById(R.id.sms);
+        call = findViewById(R.id.call);
+        sms = findViewById(R.id.sms);
 
 
         mViewPager = (ViewPager) findViewById(R.id.viewPager);
-
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("ads");
 
         db = FirebaseFirestore.getInstance();
         Intent intent = getIntent();
@@ -86,19 +95,15 @@ public class AdPage extends AppCompatActivity {
     }
 
     public void init(String id) {
-        progressDialog.setMessage("Working");
-        progressDialog.setTitle("Please wait");
-        progressDialog.show();
-        db.collection("ads")
-                .document(id)
-                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        mViewPager = findViewById(R.id.viewPager);
+        adapter = new SliderAdapter(AdPage.this, picUrls);
+        mViewPager.setAdapter(adapter);
+        mDatabase.child(id).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot != null) {
-
-                    AdDetails adDetails = documentSnapshot.toObject(AdDetails.class);
-                    if (adDetails != null) {
-                        progressDialog.dismiss();
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot != null) {
+                    AdDetails adDetails = dataSnapshot.getValue(AdDetails.class);
+                    if(adDetails!=null){
                         DecimalFormat formatter = new DecimalFormat("#,###,###");
                         String formatedPrice = formatter.format(adDetails.getPrice());
                         title.setText(adDetails.getTitle());
@@ -108,15 +113,56 @@ public class AdPage extends AppCompatActivity {
                         description.setText("" + adDetails.getDescription());
                         username.setText(adDetails.getUsername());
 
+
+
+
+                        for (DataSnapshot childSnapshot: dataSnapshot.child("pictures").getChildren()) {
+
+                                                adapter.addUrls("" + childSnapshot.getValue());
+                        }
                         viewCount = adDetails.getViews();
-                        phoneNumber=adDetails.getPhone();
+                        phoneNumber = adDetails.getPhone();
                         views.setText("Views: " + adDetails.getViews());
                         viewCount++;
                     }
                 }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
+
+
+//        db.collection("ads")
+//                .document(id)
+//                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//            @Override
+//            public void onSuccess(DocumentSnapshot documentSnapshot) {
+//                if (documentSnapshot != null) {
+//
+//                    AdDetails adDetails = documentSnapshot.toObject(AdDetails.class);
+//                    if (adDetails != null) {
+//                        progressDialog.dismiss();
+//                        DecimalFormat formatter = new DecimalFormat("#,###,###");
+//                        String formatedPrice = formatter.format(adDetails.getPrice());
+//                        title.setText(adDetails.getTitle());
+//                        price.setText("Rs " + formatedPrice);
+//                        time.setText(getFormattedDate(AdPage.this, adDetails.getTime()));
+//                        city.setText("" + adDetails.getCity());
+//                        description.setText("" + adDetails.getDescription());
+//                        username.setText(adDetails.getUsername());
+//
+//                        viewCount = adDetails.getViews();
+//                        phoneNumber = adDetails.getPhone();
+//                        views.setText("Views: " + adDetails.getViews());
+//                        viewCount++;
+//                    }
+//                }
+//
+//            }
+//        });
 //                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
 //                    @Override
 //                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -128,14 +174,14 @@ public class AdPage extends AppCompatActivity {
         call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i=new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+phoneNumber));
+                Intent i = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNumber));
                 startActivity(i);
             }
         });
         sms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i=new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:"+phoneNumber));
+                Intent i = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + phoneNumber));
                 startActivity(i);
             }
         });
@@ -154,44 +200,45 @@ public class AdPage extends AppCompatActivity {
         finish();
     }
 
-    public void initViewpager(final String id) {
+    public void initViewpager( String id) {
 
 
-        mViewPager = findViewById(R.id.viewPager);
-        adapter = new SliderAdapter(AdPage.this, picUrls);
-        mViewPager.setAdapter(adapter);
 
-        db.collection("ads")
-                .document(id)
-                .collection("pictures")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (final DocumentSnapshot document : task.getResult()) {
-                                final String documentId = document.getId();
-//                                Toast.makeText(AdPage.this, ""+document.getId(), Toast.LENGTH_SHORT).show();
-                                db.collection("ads").document(id)
-                                        .collection("pictures")
-                                        .document(documentId)
-                                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
-//                                               picUrls.add(""+documentSnapshot.getData())
-                                                Map<String, Object> pictureUrls = documentSnapshot.getData();
-                                                Map.Entry<String, Object> entry = pictureUrls.entrySet().iterator().next();
-                                                String key = entry.getKey();
-                                                String value = (String) entry.getValue();
-//                                                picUrls.add(""+value);
-                                                adapter.addUrls("" + value);
-                                            }
-                                        });
-                            }
-                        }
-                    }
-                });
+
+
+
+//        db.collection("ads")
+//                .document(id)
+//                .collection("pictures")
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            for (final DocumentSnapshot document : task.getResult()) {
+//                                final String documentId = document.getId();
+////                                Toast.makeText(AdPage.this, ""+document.getId(), Toast.LENGTH_SHORT).show();
+//                                db.collection("ads").document(id)
+//                                        .collection("pictures")
+//                                        .document(documentId)
+//                                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+//                                            @Override
+//                                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+//
+////                                               picUrls.add(""+documentSnapshot.getData())
+//                                                Map<String, Object> pictureUrls = documentSnapshot.getData();
+//                                                Map.Entry<String, Object> entry = pictureUrls.entrySet().iterator().next();
+//                                                String key = entry.getKey();
+//                                                String value = (String) entry.getValue();
+////                                                picUrls.add(""+value);
+//                                                adapter.addUrls("" + value);
+//                                            }
+//                                        });
+//                            }
+//                        }
+//                    }
+//                });
     }
 
     public String getFormattedDate(Context context, long smsTimeInMilis) {
@@ -215,20 +262,24 @@ public class AdPage extends AppCompatActivity {
     }
 
     public void updateViews() {
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("views", viewCount);
-        db.collection("ads").document(adId).update(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                return;
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
 
-                return;
-            }
-        });
+        mDatabase.child(adId).child("views").setValue(viewCount);
+
+
+//        Map<String, Object> updates = new HashMap<>();
+//        updates.put("views", viewCount);
+//        db.collection("ads").document(adId).update(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
+//            @Override
+//            public void onSuccess(Void aVoid) {
+//                return;
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//
+//                return;
+//            }
+//        });
     }
 
     @Override

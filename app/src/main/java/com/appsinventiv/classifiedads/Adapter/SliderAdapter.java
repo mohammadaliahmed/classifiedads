@@ -14,6 +14,7 @@ import com.appsinventiv.classifiedads.R;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by AliAh on 25/12/2017.
@@ -22,7 +23,6 @@ import java.util.ArrayList;
 public class SliderAdapter extends PagerAdapter {
     Context context;
     LayoutInflater layoutInflater;
-    int[] images={R.drawable.abcd,R.drawable.ab,R.drawable.abc};
   ;ArrayList<String> pictures;
 
 

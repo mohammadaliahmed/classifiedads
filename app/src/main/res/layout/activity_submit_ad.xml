@@ -5,71 +5,101 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.appsinventiv.classifiedads.Activities.SubmitAd">
-    <ImageView
-        android:id="@+id/picture"
-        android:layout_width="200dp"
-        android:layout_height="200dp" />
+<ScrollView
+    android:layout_width="match_parent"
+    android:fillViewport="true"
+android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/pickpicture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
 
-        android:layout_alignEnd="@+id/title"
-        android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/title"
-        android:layout_marginTop="34dp"
-        android:text="Button"
-        tools:layout_editor_absoluteX="126dp"
-        tools:layout_editor_absoluteY="50dp" />
 
-    <EditText
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="title"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="164dp"
-        android:layout_above="@+id/price"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:background="#27002b"
 
-        android:layout_marginBottom="22dp" />
+                android:layout_height="wrap_content"
+                android:id="@+id/linearLayout">
 
-    <EditText
-        android:id="@+id/price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="price"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="244dp"
-        android:layout_centerVertical="true"
-       />
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/horizontal_recycler_view"
+                    android:background="#27002b"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    />
+            </LinearLayout>
 
-    <EditText
-        android:id="@+id/description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="description"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="330dp"
-        android:layout_above="@+id/submit"
+            <Button
+                android:id="@+id/pickpicture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
 
-        android:layout_marginBottom="68dp" />
 
-    <Button
-        android:id="@+id/submit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="submit"
-        tools:layout_editor_absoluteX="147dp"
-        tools:layout_editor_absoluteY="423dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="45dp" />
+                android:layout_alignLeft="@+id/submit"
+                android:layout_alignStart="@+id/submit"
+                android:layout_below="@+id/linearLayout"
+                android:layout_marginTop="16dp"
+                android:text="Button"
+                tools:layout_editor_absoluteX="126dp"
+                tools:layout_editor_absoluteY="50dp" />
+
+            <EditText
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/pickpicture"
+
+                android:layout_marginLeft="34dp"
+                android:layout_marginStart="34dp"
+                android:layout_marginTop="23dp"
+
+                android:ems="10"
+                android:hint="title"
+                android:inputType="textPersonName"
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="164dp" />
+
+            <EditText
+                android:id="@+id/price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/title"
+                android:layout_alignStart="@+id/title"
+                android:layout_below="@+id/title"
+                android:layout_marginTop="16dp"
+                android:ems="10"
+                android:hint="price"
+                android:inputType="textPersonName"
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="244dp" />
+
+            <EditText
+                android:id="@+id/description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_alignLeft="@+id/price"
+                android:layout_alignStart="@+id/price"
+                android:layout_below="@+id/price"
+                android:layout_marginTop="27dp"
+                android:ems="10"
+                android:hint="description"
+                android:inputType="textPersonName"
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="330dp" />
+
+            <Button
+                android:id="@+id/submit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:text="submit"
+                tools:layout_editor_absoluteX="147dp"
+                tools:layout_editor_absoluteY="423dp" />
+        </RelativeLayout>
+
+</ScrollView>
 
 </RelativeLayout>

@@ -5,12 +5,17 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.appsinventiv.classifiedads.Adapter.HorizontalAdapter;
+import com.appsinventiv.classifiedads.Category.SubChild;
 import com.appsinventiv.classifiedads.Classes.GifSizeFilter;
 import com.appsinventiv.classifiedads.Model.AdDetails;
+import com.appsinventiv.classifiedads.Model.Data;
 import com.appsinventiv.classifiedads.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -39,6 +44,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.appsinventiv.classifiedads.R;
@@ -79,7 +85,9 @@ public class SubmitAd extends AppCompatActivity {
 
     SharedPreferences userPref;
     String username,city,phonenumber;
-
+    RecyclerView horizontal_recycler_view;
+    HorizontalAdapter horizontalAdapter;
+    private List<Data> data;
     List<Uri> mSelected;
 
     ArrayList<String> adCover;
@@ -87,6 +95,7 @@ public class SubmitAd extends AppCompatActivity {
 
     FirebaseFirestore db;
     String adId;
+    long time;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +107,6 @@ public class SubmitAd extends AppCompatActivity {
         imageUrl = new ArrayList<String>();
         adCover = new ArrayList<String>();
 
-        picture = (ImageView) findViewById(R.id.picture);
 
         pickPicture = (Button) findViewById(R.id.pickpicture);
         submitAd = (Button) findViewById(R.id.submit);
@@ -112,12 +120,29 @@ public class SubmitAd extends AppCompatActivity {
                 submitAd();
             }
         });
+        time = System.currentTimeMillis();
 
         userPref = getSharedPreferences("userDetails", Context.MODE_PRIVATE);
 
         username=userPref.getString("username","");
         phonenumber=userPref.getString("phone","");
         city=userPref.getString("city","");
+
+
+        horizontal_recycler_view= (RecyclerView) findViewById(R.id.horizontal_recycler_view);
+
+        data = fill_with_data();
+
+
+        horizontalAdapter=new HorizontalAdapter(data, getApplication());
+
+        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(SubmitAd.this, LinearLayoutManager.HORIZONTAL, false);
+        horizontal_recycler_view.setLayoutManager(horizontalLayoutManager);
+        horizontal_recycler_view.setAdapter(horizontalAdapter);
+
+
+
+
 
         pickPicture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,6 +160,18 @@ public class SubmitAd extends AppCompatActivity {
             }
         });
 
+    }
+    public List<Data> fill_with_data() {
+
+        List<Data> data = new ArrayList<>();
+
+        data.add(new Data( R.drawable.car));
+        data.add(new Data( R.drawable.car));
+        data.add(new Data( R.drawable.car));
+        data.add(new Data( R.drawable.car));
+        data.add(new Data( R.drawable.car));
+
+        return data;
     }
 
     @Override
@@ -157,55 +194,60 @@ public class SubmitAd extends AppCompatActivity {
         String Adtitle = title.getText().toString(),
                 AdDescription = description.getText().toString();
         long AdPrice = Long.parseLong(price.getText().toString());
-        long userId = 2054;
-
-        long time = System.currentTimeMillis();
-
 
         DatabaseReference pushRef = mDatabase.child("ads").child("" + time);
 
-//        String pushKey = pushRef.getKey();
-//        pushRef.setValue(new AdDetails(Adtitle, AdDescription,"lahore","","yes","vehicles","cars","toyota",time,userId,AdPrice));
-
-        db.collection("ads").document("" + time)
-                .set(new AdDetails
-                        (
-                                Adtitle,
-                                AdDescription,
-                                username,
-                                ""+phonenumber,
-                                city,
-                                "",
-                                "yes",
-                                "vehicles",
-                                "cars",
-                                "toyota",
-                                time,
-                                AdPrice,
-                                0))
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
+        pushRef.setValue(new AdDetails(Adtitle,AdDescription,username,""+phonenumber,city,""
+                ,"yes","vehicles","cars",
+                "toyota",time,AdPrice,0)).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(SubmitAd.this, "Data sent to db", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(SubmitAd.this, "failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SubmitAd.this, "Error"+e, Toast.LENGTH_SHORT).show();
             }
         });
 
+//
+//        db.collection("ads").document("" + time)
+//                .set(new AdDetails
+//                        (
+//                                Adtitle,
+//                                AdDescription,
+//                                username,
+//                                ""+phonenumber,
+//                                city,
+//                                "",
+//                                "yes",
+//                                "vehicles",
+//                                "cars",
+//                                "toyota",
+//                                time,
+//                                AdPrice,
+//                                0))
+//                .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void aVoid) {
+//
+//                    }
+//                }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                Toast.makeText(SubmitAd.this, "failed", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
-        Collections.reverse(imageUrl);
-        for (final String img : imageUrl
+
+//        Collections.reverse(imageUrl);
+        for ( String img : imageUrl
                 ) {
 
             putPictures(img, "" + time);
         }
 
-
-//        mDatabase.child("picUrl").setValue(adCover.get(0));
-//        Toast.makeText(SubmitAd.this, "Done", Toast.LENGTH_SHORT).show();
         Intent i = new Intent(SubmitAd.this, SuccessPage.class);
         startActivity(i);
         finish();
@@ -230,13 +272,10 @@ public class SubmitAd extends AppCompatActivity {
 
                         Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
-                        String randomId = Long.toHexString(Double.doubleToLongBits(Math.random()));
-                        Map<String, Object> data1 = new HashMap<>();
-                        data1.put(randomId, "" + downloadUrl);
+                        mDatabase.child("ads").child(""+time).child("pictures").push().setValue(""+downloadUrl);
 
-                        db.collection("ads").document(key).collection("pictures").add(data1);
                         adCover.add("" + downloadUrl);
-                        db.collection("ads").document(key).update("picUrl", "" + downloadUrl);
+                        mDatabase.child("ads").child(""+time).child("picUrl").setValue(""+downloadUrl);
 
                     }
                 })
@@ -269,8 +308,8 @@ public class SubmitAd extends AppCompatActivity {
 
 //      max Height and width values of the compressed image is taken as 816x612
 
-        float maxHeight = 816.0f;
-        float maxWidth = 612.0f;
+        float maxHeight = 1500.0f;
+        float maxWidth = 1300.0f;
         float imgRatio = actualWidth / actualHeight;
         float maxRatio = maxWidth / maxHeight;
 
