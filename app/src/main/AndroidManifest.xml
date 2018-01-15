@@ -53,17 +53,36 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.AdPictures" />
-        <activity android:name=".Category.ChildCategory" />
-        <activity android:name=".Category.MainCategory" />
-        <activity android:name=".Category.SubChild" />
-        <activity android:name=".Activities.CategoryChooser" />
-        <activity android:name=".Activities.SearchResults" />
+        <activity android:name=".Activities.AdPictures"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".Category.ChildCategory"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".Category.MainCategory"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".Category.SubChild"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".Activities.CategoryChooser"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".Activities.SearchResults"
+            android:screenOrientation="portrait"
+            />
         <activity
             android:name=".Activities.Filters"
             android:label="@string/title_activity_filters"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan"></activity>
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".Activities.HomePage"
+            android:label="@string/title_activity_home_page"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Activities.ViewPictures"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

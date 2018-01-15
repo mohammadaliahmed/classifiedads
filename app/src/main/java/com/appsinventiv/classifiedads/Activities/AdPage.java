@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.appsinventiv.classifiedads.Adapter.AdPicturesAdapter;
 import com.appsinventiv.classifiedads.Adapter.SliderAdapter;
 import com.appsinventiv.classifiedads.Model.AdDetails;
 import com.appsinventiv.classifiedads.R;
@@ -48,7 +49,7 @@ public class AdPage extends AppCompatActivity {
     TextView title, price, time, city, description, views, username;
     FirebaseFirestore db;
     ViewPager mViewPager;
-    ArrayList<String> picUrls = new ArrayList<String>();
+    public static ArrayList<String> picUrls = new ArrayList<String>();
 
     SliderAdapter adapter;
     long viewCount;
@@ -89,7 +90,6 @@ public class AdPage extends AppCompatActivity {
         adId = intent.getStringExtra("adId");
 
         init(adId);
-        initViewpager(adId);
 
 
     }
@@ -103,7 +103,7 @@ public class AdPage extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot != null) {
                     AdDetails adDetails = dataSnapshot.getValue(AdDetails.class);
-                    if(adDetails!=null){
+                    if (adDetails != null) {
                         DecimalFormat formatter = new DecimalFormat("#,###,###");
                         String formatedPrice = formatter.format(adDetails.getPrice());
                         title.setText(adDetails.getTitle());
@@ -114,16 +114,15 @@ public class AdPage extends AppCompatActivity {
                         username.setText(adDetails.getUsername());
 
 
+                        for (DataSnapshot childSnapshot : dataSnapshot.child("pictures").getChildren()) {
 
-
-                        for (DataSnapshot childSnapshot: dataSnapshot.child("pictures").getChildren()) {
-
-                                                adapter.addUrls("" + childSnapshot.getValue());
+                            adapter.addUrls("" + childSnapshot.getValue());
                         }
                         viewCount = adDetails.getViews();
                         phoneNumber = adDetails.getPhone();
                         views.setText("Views: " + adDetails.getViews());
                         viewCount++;
+
                     }
                 }
             }
@@ -134,43 +133,6 @@ public class AdPage extends AppCompatActivity {
             }
         });
 
-
-//        db.collection("ads")
-//                .document(id)
-//                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-//            @Override
-//            public void onSuccess(DocumentSnapshot documentSnapshot) {
-//                if (documentSnapshot != null) {
-//
-//                    AdDetails adDetails = documentSnapshot.toObject(AdDetails.class);
-//                    if (adDetails != null) {
-//                        progressDialog.dismiss();
-//                        DecimalFormat formatter = new DecimalFormat("#,###,###");
-//                        String formatedPrice = formatter.format(adDetails.getPrice());
-//                        title.setText(adDetails.getTitle());
-//                        price.setText("Rs " + formatedPrice);
-//                        time.setText(getFormattedDate(AdPage.this, adDetails.getTime()));
-//                        city.setText("" + adDetails.getCity());
-//                        description.setText("" + adDetails.getDescription());
-//                        username.setText(adDetails.getUsername());
-//
-//                        viewCount = adDetails.getViews();
-//                        phoneNumber = adDetails.getPhone();
-//                        views.setText("Views: " + adDetails.getViews());
-//                        viewCount++;
-//                    }
-//                }
-//
-//            }
-//        });
-//                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-//
-//
-//                    }
-//
-//                });
         call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -197,49 +159,10 @@ public class AdPage extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         updateViews();
+
         finish();
     }
 
-    public void initViewpager( String id) {
-
-
-
-
-
-
-
-//        db.collection("ads")
-//                .document(id)
-//                .collection("pictures")
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            for (final DocumentSnapshot document : task.getResult()) {
-//                                final String documentId = document.getId();
-////                                Toast.makeText(AdPage.this, ""+document.getId(), Toast.LENGTH_SHORT).show();
-//                                db.collection("ads").document(id)
-//                                        .collection("pictures")
-//                                        .document(documentId)
-//                                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//                                            @Override
-//                                            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-//
-////                                               picUrls.add(""+documentSnapshot.getData())
-//                                                Map<String, Object> pictureUrls = documentSnapshot.getData();
-//                                                Map.Entry<String, Object> entry = pictureUrls.entrySet().iterator().next();
-//                                                String key = entry.getKey();
-//                                                String value = (String) entry.getValue();
-////                                                picUrls.add(""+value);
-//                                                adapter.addUrls("" + value);
-//                                            }
-//                                        });
-//                            }
-//                        }
-//                    }
-//                });
-    }
 
     public String getFormattedDate(Context context, long smsTimeInMilis) {
         Calendar smsTime = Calendar.getInstance();
@@ -263,23 +186,22 @@ public class AdPage extends AppCompatActivity {
 
     public void updateViews() {
 
-        mDatabase.child(adId).child("views").setValue(viewCount);
+        mDatabase.child(adId).child("views").setValue(viewCount).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                SliderAdapter.pictures.clear();
+                AdPicturesAdapter.pictures.clear();
+                finish();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                SliderAdapter.pictures.clear();
+                AdPicturesAdapter.pictures.clear();
+                finish();
+            }
+        });
 
-
-//        Map<String, Object> updates = new HashMap<>();
-//        updates.put("views", viewCount);
-//        db.collection("ads").document(adId).update(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
-//            @Override
-//            public void onSuccess(Void aVoid) {
-//                return;
-//            }
-//        }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception e) {
-//
-//                return;
-//            }
-//        });
     }
 
     @Override

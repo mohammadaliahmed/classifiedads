@@ -1,7 +1,6 @@
 package com.appsinventiv.classifiedads.Adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
@@ -11,39 +10,22 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.appsinventiv.classifiedads.Activities.AdPictures;
-import com.appsinventiv.classifiedads.Activities.ViewPictures;
 import com.appsinventiv.classifiedads.R;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
- * Created by AliAh on 25/12/2017.
+ * Created by AliAh on 15/01/2018.
  */
 
-public class SliderAdapter extends PagerAdapter {
+public class AdPicturesAdapter extends PagerAdapter {
     Context context;
     LayoutInflater layoutInflater;
     public static ArrayList<String> pictures;
 
-
-    public SliderAdapter(Context context,ArrayList<String> pictures) {
+    public AdPicturesAdapter(Context context, ArrayList<String> pictures) {
         this.context = context;
-        this.pictures=pictures;
-    }
-    public void addUrls(String url){
-        pictures.add(url);
-        notifyDataSetChanged();
-    }
-
-
-    public ArrayList<String> getPictures() {
-        return pictures;
-    }
-
-    public void setPictures(ArrayList<String> pictures) {
         this.pictures = pictures;
     }
 
@@ -57,24 +39,21 @@ public class SliderAdapter extends PagerAdapter {
         return (view==(LinearLayout)object);
 
     }
-
-    @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         layoutInflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view=layoutInflater.inflate(R.layout.product_slider,container,false);
-        ImageView imageView=view.findViewById(R.id.slider_image);
+        View view=layoutInflater.inflate(R.layout.ad_pictures_slider_layout,container,false);
+        ImageView imageView=view.findViewById(R.id.images);
         Glide.with(context)
                 .load(pictures.get(position))
                 .into(imageView);
 
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i=new Intent(context, ViewPictures.class);
-                context.startActivity(i);
-            }
-        });
+//        view.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Toast.makeText(context, "clicked", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
 //        imageView.setImageResource(images[position]);
 

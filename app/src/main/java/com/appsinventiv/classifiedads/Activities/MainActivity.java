@@ -68,8 +68,7 @@ public class MainActivity extends AppCompatActivity
     SwipeRefreshLayout mSwipeRefreshLayout;
 
     SharedPreferences userPref;
-    String city = "lahore";
- Button filters;
+    String city;
     DatabaseReference mDatabase;
     private ProgressBar pgsBar;
 
@@ -102,13 +101,14 @@ public class MainActivity extends AppCompatActivity
         if (!hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         }
-        filters=(Button)findViewById(R.id.filters);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         adapter = new ItemAdapter(itemList, MainActivity.this, MainActivity.this, recyclerView);
         recyclerView.setAdapter(adapter);
+        userPref = getSharedPreferences("userDetails", Context.MODE_PRIVATE);
+        city=userPref.getString("city","");
 
         mDatabase = FirebaseDatabase.getInstance().getReference().child("ads");
         db = FirebaseFirestore.getInstance();
@@ -137,14 +137,7 @@ public class MainActivity extends AppCompatActivity
 //            }
 //        });
 
-        filters.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i=new Intent(MainActivity.this, Filters.class);
-                startActivity(i);
 
-            }
-        });
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,7 +180,8 @@ public class MainActivity extends AppCompatActivity
                         if (dataSnapshot != null) {
                             AdDetails model = dataSnapshot.getValue(AdDetails.class);
                             if (model != null) {
-                                if (model.getCity().equals("lahore")) {
+                                if (model.getCity().contains(city)) {
+
                                     itemList.add(model);
                                     Collections.sort(itemList, new Comparator<AdDetails>() {
                                         @Override
@@ -330,6 +324,10 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+        else if(id==R.id.filters){
+            Intent i=new Intent(MainActivity.this, Filters.class);
+            startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);

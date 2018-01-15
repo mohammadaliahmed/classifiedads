@@ -147,7 +147,7 @@ public class Login extends AppCompatActivity {
 
     private void launchHomeScreen() {
         prefManager.setFirstTimeLaunch(false);
-        startActivity(new Intent(Login.this, MainActivity.class));
+        startActivity(new Intent(Login.this, HomePage.class));
 
         finish();
     }

@@ -202,7 +202,7 @@ public class SubmitAd extends AppCompatActivity {
                 "toyota",time,AdPrice,0)).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Toast.makeText(SubmitAd.this, "Data sent to db", Toast.LENGTH_SHORT).show();
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override

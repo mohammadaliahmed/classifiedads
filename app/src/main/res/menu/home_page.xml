@@ -7,10 +7,9 @@
         android:title="@string/action_settings"
         app:showAsAction="never" />
     <item
-        android:id="@+id/filters"
-        android:orderInCategory="100"
-        android:icon="@drawable/ic_filter"
-        app:showAsAction="always"
-        android:title="filter" />
-
+        android:id="@+id/action_search"
+        android:icon="@android:drawable/ic_menu_search"
+        android:title="Search.."
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="ifRoom" />
 </menu>

@@ -8,5 +8,6 @@ public class Constants {
 
     public static int FIRESTORE_LIMIT=6;
     public static int FIREBASE_LIMIT=100;
+    public static int HORIZONTAL_LIST_HOME_LIMIT=10;
 
 }
