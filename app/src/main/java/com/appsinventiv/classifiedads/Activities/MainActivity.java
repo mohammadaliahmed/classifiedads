@@ -14,9 +14,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -33,6 +36,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.appsinventiv.classifiedads.Adapter.ItemAdapter;
+import com.appsinventiv.classifiedads.Classes.ClickListener;
+import com.appsinventiv.classifiedads.Classes.RecyclerTouchListener;
 import com.appsinventiv.classifiedads.Model.AdDetails;
 import com.appsinventiv.classifiedads.Model.Item;
 import com.appsinventiv.classifiedads.Interface.OnLoadMoreListener;
@@ -105,6 +110,7 @@ public class MainActivity extends AppCompatActivity
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         adapter = new ItemAdapter(itemList, MainActivity.this, MainActivity.this, recyclerView);
         recyclerView.setAdapter(adapter);
         userPref = getSharedPreferences("userDetails", Context.MODE_PRIVATE);
@@ -113,29 +119,24 @@ public class MainActivity extends AppCompatActivity
         mDatabase = FirebaseDatabase.getInstance().getReference().child("ads");
         db = FirebaseFirestore.getInstance();
         pgsBar.setVisibility(View.VISIBLE);
+
+
+
+        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                AdDetails movie = itemList.get(position);
+//                Toast.makeText(getApplicationContext(), movie.getTitle() + " is selected!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
+
         loadData();
-//
-//        adapter.setOnLoadMore(new OnLoadMoreListener() {
-//            @Override
-//            public void onLoadMore() {
-//                recyclerView.post(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        itemList.add(null);
-//                        adapter.notifyItemInserted(itemList.size() - 1);
-//                    }
-//                });
-//
-//                new Handler().postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//
-//                        loadMoreData();
-//                    }
-//                }, 2000);
-//
-//            }
-//        });
+
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -223,79 +224,7 @@ public class MainActivity extends AppCompatActivity
                 });
 
 
-//        query = db.collection("ads");
-//        query.whereEqualTo("city","lahore")
-//
-//
-//                .orderBy("time", com.google.firebase.firestore.Query.Direction.DESCENDING)
-//                .limit(Constants.FIRESTORE_LIMIT)
-//                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onEvent(QuerySnapshot querySnapshot, FirebaseFirestoreException e) {
-//                        Toast.makeText(MainActivity.this, ""+querySnapshot, Toast.LENGTH_SHORT).show();
-//
-//                        for (DocumentSnapshot snapshot : querySnapshot.getDocuments()){
-//                            AdDetails model = snapshot.toObject(AdDetails.class);
-//                            itemList.add(model);
-//                            adapter.notifyDataSetChanged();
-//
-//                            lastVisible = querySnapshot.getDocuments().get(querySnapshot.size() -1);
-//                        }
-//                    }
-//                });
     }
-
-//    public void loadMoreData() {
-//        com.google.firebase.firestore.Query next = FirebaseFirestore.getInstance()
-//                .collection("ads")
-//                .whereEqualTo("city", "lahore")
-//                .orderBy("time", com.google.firebase.firestore.Query.Direction.DESCENDING)
-//                .startAfter(lastVisible)
-//                .limit(Constants.FIRESTORE_LIMIT);
-//        next.addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(final QuerySnapshot querySnapshot, FirebaseFirestoreException e) {
-//                if (e == null) {
-//
-//                    for (DocumentSnapshot snapshot : querySnapshot.getDocuments()) {
-//
-//                        AdDetails model = snapshot.toObject(AdDetails.class);
-//                        itemList.add(model);
-//                        adapter.notifyDataSetChanged();
-//                        lastVisible = querySnapshot.getDocuments().get(querySnapshot.size() - 1);
-//                        adapter.setIsLoading(false);
-//
-//                    }
-//
-//                    com.google.firebase.firestore.Query next = FirebaseFirestore.getInstance()
-//                            .collection("ads")
-//                            .whereEqualTo("city", "lahore")
-//
-//                            .orderBy("time", com.google.firebase.firestore.Query.Direction.DESCENDING);
-//                    next.addSnapshotListener(new EventListener<QuerySnapshot>() {
-//                        @Override
-//                        public void onEvent(QuerySnapshot querySnapshot2, FirebaseFirestoreException e) {
-//                            if (e == null) {
-//
-//                                prevItemVisible = querySnapshot2.getDocuments().get(querySnapshot2.size() - 1);
-//
-//                                if (prevItemVisible.getId().equals(lastVisible.getId())) {
-//                                    adapter.isFullLoaded(true);
-//                                }
-//                            }
-//                        }
-//
-//                    });
-//
-//
-//                } else {
-//                    Log.e("errorLoadMore", e.getLocalizedMessage());
-//                }
-//            }
-//
-//        });
-//
-//    }
 
     @Override
     public void onBackPressed() {
@@ -304,6 +233,8 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+            finish();
+
         }
     }
 

@@ -16,6 +16,7 @@ import com.appsinventiv.classifiedads.Category.SubChild;
 import com.appsinventiv.classifiedads.Classes.GifSizeFilter;
 import com.appsinventiv.classifiedads.Model.AdDetails;
 import com.appsinventiv.classifiedads.Model.Data;
+import com.appsinventiv.classifiedads.Model.SelectedAdImages;
 import com.appsinventiv.classifiedads.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -89,6 +90,7 @@ public class SubmitAd extends AppCompatActivity {
     HorizontalAdapter horizontalAdapter;
     private List<Data> data;
     List<Uri> mSelected;
+    List<Uri> imagesSelected;
 
     ArrayList<String> adCover;
     private static final int REQUEST_CODE_CHOOSE = 23;
@@ -163,15 +165,15 @@ public class SubmitAd extends AppCompatActivity {
     }
     public List<Data> fill_with_data() {
 
-        List<Data> data = new ArrayList<>();
+        List<Data> pickedPictures = new ArrayList<>();
 
-        data.add(new Data( R.drawable.car));
-        data.add(new Data( R.drawable.car));
-        data.add(new Data( R.drawable.car));
-        data.add(new Data( R.drawable.car));
-        data.add(new Data( R.drawable.car));
+        pickedPictures.add(new Data( R.drawable.car));
+        pickedPictures.add(new Data( R.drawable.car));
+        pickedPictures.add(new Data( R.drawable.car));
+        pickedPictures.add(new Data( R.drawable.car));
+        pickedPictures.add(new Data( R.drawable.car));
 
-        return data;
+        return pickedPictures;
     }
 
     @Override
@@ -179,6 +181,8 @@ public class SubmitAd extends AppCompatActivity {
         // Check which request we're responding to
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
             mSelected = Matisse.obtainResult(data);
+            imagesSelected=mSelected;
+            horizontalAdapter.notifyDataSetChanged();
             for (Uri img :
                     mSelected) {
                 imageUrl.add(compressImage("" + img));
@@ -211,34 +215,6 @@ public class SubmitAd extends AppCompatActivity {
             }
         });
 
-//
-//        db.collection("ads").document("" + time)
-//                .set(new AdDetails
-//                        (
-//                                Adtitle,
-//                                AdDescription,
-//                                username,
-//                                ""+phonenumber,
-//                                city,
-//                                "",
-//                                "yes",
-//                                "vehicles",
-//                                "cars",
-//                                "toyota",
-//                                time,
-//                                AdPrice,
-//                                0))
-//                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void aVoid) {
-//
-//                    }
-//                }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception e) {
-//                Toast.makeText(SubmitAd.this, "failed", Toast.LENGTH_SHORT).show();
-//            }
-//        });
 
 
 //        Collections.reverse(imageUrl);

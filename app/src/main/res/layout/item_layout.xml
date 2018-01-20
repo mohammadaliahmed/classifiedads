@@ -9,7 +9,9 @@
     card_view:cardCornerRadius="5dp"
     android:layout_margin="3dp"
     android:padding="10dp"
-    android:background="@drawable/shape">
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+  >
 
 
     <RelativeLayout

@@ -2,7 +2,7 @@ package com.appsinventiv.classifiedads.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -14,12 +14,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
+import com.appsinventiv.classifiedads.Adapter.HomeCategoryAdapter;
 import com.appsinventiv.classifiedads.Adapter.HomePageCarAdsAdapter;
 import com.appsinventiv.classifiedads.Adapter.HomePageMobileAdsAdapter;
+import com.appsinventiv.classifiedads.Classes.CategoryClass;
 import com.appsinventiv.classifiedads.Model.AdDetails;
 import com.appsinventiv.classifiedads.R;
 import com.google.firebase.database.ChildEventListener;
@@ -37,12 +39,16 @@ public class HomePage extends AppCompatActivity
     RecyclerView recyclerView;
     HomePageMobileAdsAdapter adapterMobiles;
     HomePageCarAdsAdapter adapterCars;
+    HomeCategoryAdapter categoryAdapter;
     DatabaseReference mDatabase;
 
     ArrayList<AdDetails> mobilePhone;
+    ArrayList<CategoryClass> categoryClassList;
     ArrayList<AdDetails> cars;
     ImageView bigAd;
     private ProgressBar pgsBar,pgsBar1;
+
+    Button moreCars,moreMobiles;
 
 
     @Override
@@ -58,10 +64,29 @@ public class HomePage extends AppCompatActivity
         pgsBar.setVisibility(View.VISIBLE);
         pgsBar1.setVisibility(View.VISIBLE);
 
+        moreMobiles=(Button)findViewById(R.id.more_mobiles);
+        moreCars =(Button)findViewById(R.id.more_cars);
+
+        moreMobiles.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(HomePage.this,MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        moreCars.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(HomePage.this,MainActivity.class);
+                startActivity(intent);
+            }
+        });
 
 
         mDatabase= FirebaseDatabase.getInstance().getReference();
 
+        initcategories();
         initMobileAds();
         initCarAds();
 
@@ -74,6 +99,50 @@ public class HomePage extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
+
+    private void initcategories() {
+        categoryClassList =new ArrayList<CategoryClass>();
+        CategoryClass c=new CategoryClass("Mobiles",R.drawable.mobile_category);
+        categoryClassList.add(c);
+
+        c=new CategoryClass("Cars",R.drawable.car_category);
+        categoryClassList.add(c);
+
+        c=new CategoryClass("Bikes",R.drawable.bike_category);
+        categoryClassList.add(c);
+
+        c=new CategoryClass("Electronics",R.drawable.electronics_category);
+        categoryClassList.add(c);
+
+        c=new CategoryClass("Property",R.drawable.property_category);
+        categoryClassList.add(c);
+
+        c=new CategoryClass("Jobs",R.drawable.job_category);
+        categoryClassList.add(c);
+
+        c=new CategoryClass("Kids",R.drawable.kids_category);
+        categoryClassList.add(c);
+
+        c=new CategoryClass("Fashion",R.drawable.fashion_category);
+        categoryClassList.add(c);
+
+        c=new CategoryClass("Services",R.drawable.services_category);
+        categoryClassList.add(c);
+
+
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.category_recyclerview);
+//        LinearLayoutManager horizontalLayoutManagaer
+//                = new LinearLayoutManager(HomePage.this, LinearLayoutManager.HORIZONTAL, false);
+        int numberOfColumns = 3;
+
+        recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
+//        recyclerView.setLayoutManager(horizontalLayoutManagaer);
+        categoryAdapter = new HomeCategoryAdapter(this, categoryClassList);
+        recyclerView.setAdapter(categoryAdapter);
+    }
+
+
     public void initMobileAds(){
         mobilePhone=new ArrayList<AdDetails>();
 
@@ -218,9 +287,7 @@ public class HomePage extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent i=new Intent(HomePage.this,MainActivity.class);
-            startActivity(i);
-            finish();
+
             return true;
         }
 

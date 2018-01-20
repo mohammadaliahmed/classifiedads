@@ -189,16 +189,27 @@ public class AdPage extends AppCompatActivity {
         mDatabase.child(adId).child("views").setValue(viewCount).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                SliderAdapter.pictures.clear();
-                AdPicturesAdapter.pictures.clear();
-                finish();
+                if (SliderAdapter.pictures != null) {
+                    SliderAdapter.pictures.clear();
+                    finish();
+                }
+                if(AdPicturesAdapter.pictures!=null) {
+                    AdPicturesAdapter.pictures.clear();
+                    finish();
+                }
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                SliderAdapter.pictures.clear();
-                AdPicturesAdapter.pictures.clear();
-                finish();
+                if (SliderAdapter.pictures != null) {
+                    SliderAdapter.pictures.clear();
+                    finish();
+                }
+                if(AdPicturesAdapter.pictures!=null) {
+                    AdPicturesAdapter.pictures.clear();
+                    finish();
+                }
             }
         });
 

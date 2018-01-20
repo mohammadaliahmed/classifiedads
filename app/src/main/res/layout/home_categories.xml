@@ -23,7 +23,7 @@
         android:verticalSpacing="10dp">
 
         <android.support.v7.widget.CardView
-            android:id="@+id/cardViewCategory"
+            android:id="@+id/cardViewAdInfo"
 
             android:layout_width="110dp"
 
@@ -57,7 +57,7 @@
 
         </android.support.v7.widget.CardView>
         <android.support.v7.widget.CardView
-            android:id="@+id/cardViewCategory"
+            android:id="@+id/cardViewAdInfo"
 
             android:layout_width="110dp"
 
@@ -91,7 +91,7 @@
 
         </android.support.v7.widget.CardView>
         <android.support.v7.widget.CardView
-            android:id="@+id/cardViewCategory"
+            android:id="@+id/cardViewAdInfo"
 
             android:layout_width="110dp"
 
@@ -125,7 +125,7 @@
 
         </android.support.v7.widget.CardView>
         <android.support.v7.widget.CardView
-            android:id="@+id/cardViewCategory"
+            android:id="@+id/cardViewAdInfo"
 
             android:layout_width="110dp"
 
@@ -159,7 +159,7 @@
 
         </android.support.v7.widget.CardView>
         <android.support.v7.widget.CardView
-            android:id="@+id/cardViewCategory"
+            android:id="@+id/cardViewAdInfo"
 
             android:layout_width="110dp"
 
@@ -193,7 +193,7 @@
 
         </android.support.v7.widget.CardView>
         <android.support.v7.widget.CardView
-            android:id="@+id/cardViewCategory"
+            android:id="@+id/cardViewAdInfo"
 
             android:layout_width="110dp"
 
@@ -227,7 +227,7 @@
 
         </android.support.v7.widget.CardView>
         <android.support.v7.widget.CardView
-            android:id="@+id/cardViewCategory"
+            android:id="@+id/cardViewAdInfo"
 
             android:layout_width="110dp"
 
@@ -261,7 +261,7 @@
 
         </android.support.v7.widget.CardView>
         <android.support.v7.widget.CardView
-            android:id="@+id/cardViewCategory"
+            android:id="@+id/cardViewAdInfo"
 
             android:layout_width="110dp"
 
@@ -295,7 +295,7 @@
 
         </android.support.v7.widget.CardView>
         <android.support.v7.widget.CardView
-            android:id="@+id/cardViewCategory"
+            android:id="@+id/cardViewAdInfo"
 
             android:layout_width="110dp"
 
