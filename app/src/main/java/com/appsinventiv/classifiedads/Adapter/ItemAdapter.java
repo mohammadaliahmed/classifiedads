@@ -40,13 +40,6 @@ public class ItemAdapter extends RecyclerView.Adapter {
     private static final int ITEM_VIEW = 0;
     private static final int LOADING_VIEW = 1;
 
-    private int visibleThreshold = 200;
-    private int lastVisibleItem, totalItemCount;
-
-    private OnLoadMoreListener onLoadMoreListener;
-    boolean isLoading;
-    boolean isAllLoaded = false;
-
 
 
     public ItemAdapter(List<AdDetails> itemList, Activity activity, Context ctx, RecyclerView recyclerView) {
@@ -58,50 +51,15 @@ public class ItemAdapter extends RecyclerView.Adapter {
 
         if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
 
-//            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//                @Override
-//                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//                    super.onScrolled(recyclerView, dx, dy);
-//
-//                    LinearLayoutManager llm = (LinearLayoutManager) recyclerView.getLayoutManager();
-//
-//                    lastVisibleItem = llm.findLastVisibleItemPosition();
-//                    totalItemCount = llm.getItemCount();
-//                    Log.i("isLoading", String.valueOf(isLoading));
-//                    Log.i("isAllLoaded", String.valueOf(isAllLoaded));
-//                    Log.i("isLast", String.valueOf(lastVisibleItem));
-//
-//
-//                    if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold) && !isAllLoaded) {
-//                        if (onLoadMoreListener != null) {
-//                            onLoadMoreListener.onLoadMore();
-//                        }
-//                        isLoading = true;
-//                    }
-//
-//                }
-//            });
-
-
         }
     }
 
     @Override
     public int getItemViewType(int position) {
         return itemList.get(position) != null ? ITEM_VIEW : LOADING_VIEW;
-    }
-
-    public void setOnLoadMore(OnLoadMoreListener onLoadMore) {
-        onLoadMoreListener = onLoadMore;
-    }
+//        return position % 2 * 5;
 
 
-    public void setIsLoading(boolean param) {
-        isLoading = param;
-    }
-
-    public void isFullLoaded(boolean param) {
-        isAllLoaded = param;
     }
 
     @Override
@@ -111,9 +69,9 @@ public class ItemAdapter extends RecyclerView.Adapter {
             View v = mLInflater.inflate(R.layout.item_layout, parent, false);
             return new ItemViewHolder(v);
         }
-//        else if (viewType == LOADING_VIEW) {
-//            View v1 = mLInflater.inflate(R.layout.progressbar_item, parent, false);
-//            return new ProgressBarViewHolder(v1);
+//        else if(viewType==2){
+//            View v = mLInflater.inflate(R.layout.item_ad_layout, parent, false);
+//            return new ItemViewHolder(v);
 //        }
 
         return null;
@@ -143,12 +101,15 @@ public class ItemAdapter extends RecyclerView.Adapter {
 
                     i.putExtra("adId",""+adId.getTime());
                     ctx.startActivity(i);
-//
+
                 }
             });
 
         }
-//
+//        else if(getViewType==0){
+//            Toast.makeText(activity, "here", Toast.LENGTH_SHORT).show();
+//        }
+
     }
 
     public String getFormattedDate(Context context, long smsTimeInMilis) {

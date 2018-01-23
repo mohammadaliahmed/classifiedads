@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.appsinventiv.classifiedads.Adapter.HorizontalAdapter;
+import com.appsinventiv.classifiedads.Category.MainCategory;
 import com.appsinventiv.classifiedads.Category.SubChild;
 import com.appsinventiv.classifiedads.Classes.GifSizeFilter;
 import com.appsinventiv.classifiedads.Model.AdDetails;
@@ -46,6 +47,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.appsinventiv.classifiedads.R;
@@ -85,7 +87,7 @@ public class SubmitAd extends AppCompatActivity {
     ArrayList<String> imageUrl;
 
     SharedPreferences userPref;
-    String username,city,phonenumber;
+    String username, city, phonenumber;
     RecyclerView horizontal_recycler_view;
     HorizontalAdapter horizontalAdapter;
     private List<Data> data;
@@ -96,8 +98,9 @@ public class SubmitAd extends AppCompatActivity {
     private static final int REQUEST_CODE_CHOOSE = 23;
 
     FirebaseFirestore db;
-    String adId;
     long time;
+    EditText usernameField, phoneField, locationField;
+    TextView chooseCategoryText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +119,25 @@ public class SubmitAd extends AppCompatActivity {
         title = (EditText) findViewById(R.id.title);
         price = (EditText) findViewById(R.id.price);
         description = (EditText) findViewById(R.id.description);
+
+        usernameField = (EditText) findViewById(R.id.username);
+        phoneField = (EditText) findViewById(R.id.phone);
+        locationField = (EditText) findViewById(R.id.location);
+
+        chooseCategoryText=(TextView)findViewById(R.id.choose_category);
+
+        chooseCategoryText.setText("Choose category");
+
+        chooseCategoryText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i =new Intent(SubmitAd.this, MainCategory.class);
+                startActivity(i);
+
+            }
+        });
+
+
         submitAd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -126,24 +148,25 @@ public class SubmitAd extends AppCompatActivity {
 
         userPref = getSharedPreferences("userDetails", Context.MODE_PRIVATE);
 
-        username=userPref.getString("username","");
-        phonenumber=userPref.getString("phone","");
-        city=userPref.getString("city","");
+        username = userPref.getString("username", "");
+        phonenumber = userPref.getString("phone", "");
+        city = userPref.getString("city", "");
 
 
-        horizontal_recycler_view= (RecyclerView) findViewById(R.id.horizontal_recycler_view);
+        usernameField.setText(username);
+        phoneField.setText("" + phonenumber);
+        locationField.setText(city);
+
+        horizontal_recycler_view = (RecyclerView) findViewById(R.id.horizontal_recycler_view);
 
         data = fill_with_data();
 
 
-        horizontalAdapter=new HorizontalAdapter(data, getApplication());
+        horizontalAdapter = new HorizontalAdapter(data, getApplication());
 
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(SubmitAd.this, LinearLayoutManager.HORIZONTAL, false);
         horizontal_recycler_view.setLayoutManager(horizontalLayoutManager);
         horizontal_recycler_view.setAdapter(horizontalAdapter);
-
-
-
 
 
         pickPicture.setOnClickListener(new View.OnClickListener() {
@@ -163,15 +186,16 @@ public class SubmitAd extends AppCompatActivity {
         });
 
     }
+
     public List<Data> fill_with_data() {
 
         List<Data> pickedPictures = new ArrayList<>();
 
-        pickedPictures.add(new Data( R.drawable.car));
-        pickedPictures.add(new Data( R.drawable.car));
-        pickedPictures.add(new Data( R.drawable.car));
-        pickedPictures.add(new Data( R.drawable.car));
-        pickedPictures.add(new Data( R.drawable.car));
+        pickedPictures.add(new Data(R.drawable.car));
+        pickedPictures.add(new Data(R.drawable.car));
+        pickedPictures.add(new Data(R.drawable.car));
+        pickedPictures.add(new Data(R.drawable.car));
+        pickedPictures.add(new Data(R.drawable.car));
 
         return pickedPictures;
     }
@@ -181,7 +205,7 @@ public class SubmitAd extends AppCompatActivity {
         // Check which request we're responding to
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
             mSelected = Matisse.obtainResult(data);
-            imagesSelected=mSelected;
+            imagesSelected = mSelected;
             horizontalAdapter.notifyDataSetChanged();
             for (Uri img :
                     mSelected) {
@@ -201,9 +225,9 @@ public class SubmitAd extends AppCompatActivity {
 
         DatabaseReference pushRef = mDatabase.child("ads").child("" + time);
 
-        pushRef.setValue(new AdDetails(Adtitle,AdDescription,username,""+phonenumber,city,""
-                ,"yes","vehicles","cars",
-                "toyota",time,AdPrice,0)).addOnSuccessListener(new OnSuccessListener<Void>() {
+        pushRef.setValue(new AdDetails(Adtitle, AdDescription, username, "" + phonenumber, city, ""
+                , "yes", "vehicles", "cars",
+                "toyota", time, AdPrice, 0)).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
 
@@ -211,14 +235,13 @@ public class SubmitAd extends AppCompatActivity {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(SubmitAd.this, "Error"+e, Toast.LENGTH_SHORT).show();
+                Toast.makeText(SubmitAd.this, "Error" + e, Toast.LENGTH_SHORT).show();
             }
         });
 
 
-
 //        Collections.reverse(imageUrl);
-        for ( String img : imageUrl
+        for (String img : imageUrl
                 ) {
 
             putPictures(img, "" + time);
@@ -248,10 +271,10 @@ public class SubmitAd extends AppCompatActivity {
 
                         Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
-                        mDatabase.child("ads").child(""+time).child("pictures").push().setValue(""+downloadUrl);
+                        mDatabase.child("ads").child("" + time).child("pictures").push().setValue("" + downloadUrl);
 
                         adCover.add("" + downloadUrl);
-                        mDatabase.child("ads").child(""+time).child("picUrl").setValue(""+downloadUrl);
+                        mDatabase.child("ads").child("" + time).child("picUrl").setValue("" + downloadUrl);
 
                     }
                 })
