@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.appsinventiv.classifiedads.R;
+import com.appsinventiv.classifiedads.Utils.CommonUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -59,7 +60,8 @@ public class AddItem extends AppCompatActivity {
         db.collection("Item").add(itemMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
             @Override
             public void onComplete(@NonNull Task<DocumentReference> task) {
-                Toast.makeText(AddItem.this, "Posted", Toast.LENGTH_LONG).show();
+                CommonUtils.showToast("Posted");
+//                Toast.makeText(AddItem.this, "Posted", Toast.LENGTH_LONG).show();
                 titleText.setText("");
                 descText.setText("");
             }

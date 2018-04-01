@@ -10,7 +10,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.appsinventiv.classifiedads.Model.PicturesModel;
 import com.appsinventiv.classifiedads.R;
+import com.bogdwellers.pinchtozoom.ImageMatrixTouchHandler;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
@@ -22,9 +24,9 @@ import java.util.ArrayList;
 public class AdPicturesAdapter extends PagerAdapter {
     Context context;
     LayoutInflater layoutInflater;
-    public static ArrayList<String> pictures;
+    public static ArrayList<PicturesModel> pictures;
 
-    public AdPicturesAdapter(Context context, ArrayList<String> pictures) {
+    public AdPicturesAdapter(Context context, ArrayList<PicturesModel> pictures) {
         this.context = context;
         this.pictures = pictures;
     }
@@ -45,17 +47,11 @@ public class AdPicturesAdapter extends PagerAdapter {
         View view=layoutInflater.inflate(R.layout.ad_pictures_slider_layout,container,false);
         ImageView imageView=view.findViewById(R.id.images);
         Glide.with(context)
-                .load(pictures.get(position))
+                .load(pictures.get(position).getImageUrl())
                 .into(imageView);
+        imageView.setOnTouchListener(new ImageMatrixTouchHandler(context));
 
-//        view.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Toast.makeText(context, "clicked", Toast.LENGTH_SHORT).show();
-//            }
-//        });
 
-//        imageView.setImageResource(images[position]);
 
         container.addView(view);
 

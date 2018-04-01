@@ -6,12 +6,22 @@ package com.appsinventiv.classifiedads.Model;
 
 public class CategoryItem {
     String itemName;
+    int icon;
+
+    public CategoryItem(String itemName, int icon) {
+        this.itemName = itemName;
+        this.icon = icon;
+    }
 
     public CategoryItem() {
     }
 
-    public CategoryItem(String itemName) {
-        this.itemName = itemName;
+    public int getIcon() {
+        return icon;
+    }
+
+    public void setIcon(int icon) {
+        this.icon = icon;
     }
 
     public String getItemName() {

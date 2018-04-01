@@ -29,7 +29,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_launcher_background"
+            android:src="@drawable/placeholder"
             card_view:layout_constraintBottom_toBottomOf="parent"
             card_view:layout_constraintEnd_toEndOf="parent"
             card_view:layout_constraintHorizontal_bias="0.0"
@@ -62,12 +62,12 @@
 
         <TextView
             android:id="@+id/price"
-            android:layout_width="100dp"
+            android:layout_width="150dp"
             android:layout_height="24dp"
             android:layout_alignLeft="@+id/titleItem"
             android:layout_alignStart="@+id/titleItem"
             android:layout_below="@+id/titleItem"
-            android:hint="Description"
+
             android:textColor="#0008a7"
             android:textSize="20sp"
             card_view:layout_constraintBottom_toTopOf="@+id/time"

@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity
     RecyclerView recyclerView;
     LinearLayoutManager layoutManager;
     ItemAdapter adapter;
-    List<AdDetails> itemList = new ArrayList<>();
+    ArrayList<AdDetails> itemList = new ArrayList<>();
 
     FirebaseFirestore db;
 
@@ -85,7 +85,11 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         pgsBar = (ProgressBar) findViewById(R.id.pBar);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
+
+
+//        SubmitAd.fa.finish();
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -112,29 +116,14 @@ public class MainActivity extends AppCompatActivity
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        adapter = new ItemAdapter(itemList, MainActivity.this, MainActivity.this, recyclerView);
+        adapter = new ItemAdapter(this, itemList);
         recyclerView.setAdapter(adapter);
         userPref = getSharedPreferences("userDetails", Context.MODE_PRIVATE);
         city=userPref.getString("city","");
 
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("ads");
         db = FirebaseFirestore.getInstance();
         pgsBar.setVisibility(View.VISIBLE);
 
-
-
-        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new ClickListener() {
-            @Override
-            public void onClick(View view, int position) {
-                AdDetails movie = itemList.get(position);
-//                Toast.makeText(getApplicationContext(), movie.getTitle() + " is selected!", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onLongClick(View view, int position) {
-
-            }
-        }));
 
         loadData();
 
@@ -164,15 +153,13 @@ public class MainActivity extends AppCompatActivity
 
     public void loadData() {
 
-        com.google.firebase.database.Query query = mDatabase.orderByChild("time").limitToLast(100);
-        query
-                .addChildEventListener(new ChildEventListener() {
+     mDatabase.child("ads").limitToLast(100).addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                         if (dataSnapshot != null) {
                             AdDetails model = dataSnapshot.getValue(AdDetails.class);
                             if (model != null) {
-                                if (model.getCity().contains(city)) {
+
 
                                     itemList.add(model);
                                     Collections.sort(itemList, new Comparator<AdDetails>() {
@@ -189,7 +176,7 @@ public class MainActivity extends AppCompatActivity
 
                                     adapter.notifyDataSetChanged();
                                 }
-                            }
+
                         }
                     }
 
@@ -245,6 +232,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.add_ad) {
+
             Intent openAdd = new Intent(MainActivity.this, SubmitAd.class);
             startActivity(openAdd);
         }

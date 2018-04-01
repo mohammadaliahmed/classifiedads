@@ -19,7 +19,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.appsinventiv.classifiedads.Adapter.HomeCategoryAdapter;
-import com.appsinventiv.classifiedads.Adapter.HomePageCarAdsAdapter;
+import com.appsinventiv.classifiedads.Adapter.HomePageCarsAdsAdapter;
 import com.appsinventiv.classifiedads.Adapter.HomePageMobileAdsAdapter;
 import com.appsinventiv.classifiedads.Classes.CategoryClass;
 import com.appsinventiv.classifiedads.Model.AdDetails;
@@ -38,7 +38,7 @@ public class HomePage extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     RecyclerView recyclerView;
     HomePageMobileAdsAdapter adapterMobiles;
-    HomePageCarAdsAdapter adapterCars;
+    HomePageCarsAdsAdapter adapterCars;
     HomeCategoryAdapter categoryAdapter;
     DatabaseReference mDatabase;
 
@@ -51,12 +51,16 @@ public class HomePage extends AppCompatActivity
     Button moreCars,moreMobiles;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+
         bigAd=(ImageView)findViewById(R.id.bigad);
         pgsBar = (ProgressBar) findViewById(R.id.pBar);
         pgsBar1 = (ProgressBar) findViewById(R.id.pBar1);
@@ -208,7 +212,7 @@ public class HomePage extends AppCompatActivity
         LinearLayoutManager horizontalLayoutManagaerCars
                 = new LinearLayoutManager(HomePage.this, LinearLayoutManager.HORIZONTAL, false);
         recyclerViewCars.setLayoutManager(horizontalLayoutManagaerCars);
-        adapterCars = new HomePageCarAdsAdapter(this, cars);
+        adapterCars = new HomePageCarsAdsAdapter(this, cars);
         recyclerViewCars.setAdapter(adapterCars);
         mDatabase.child("ads").addChildEventListener(new ChildEventListener() {
             @Override
@@ -318,5 +322,6 @@ public class HomePage extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 
 }

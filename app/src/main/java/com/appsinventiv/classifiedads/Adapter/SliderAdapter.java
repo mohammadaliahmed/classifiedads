@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.appsinventiv.classifiedads.Activities.AdPictures;
 import com.appsinventiv.classifiedads.Activities.ViewPictures;
+import com.appsinventiv.classifiedads.Model.PicturesModel;
 import com.appsinventiv.classifiedads.R;
 import com.bumptech.glide.Glide;
 
@@ -26,26 +27,15 @@ import java.util.Collections;
 public class SliderAdapter extends PagerAdapter {
     Context context;
     LayoutInflater layoutInflater;
-    public static ArrayList<String> pictures;
+    public static ArrayList<PicturesModel> pictures;
 
 
-    public SliderAdapter(Context context,ArrayList<String> pictures) {
+    public SliderAdapter(Context context,ArrayList<PicturesModel> pictures) {
         this.context = context;
         this.pictures=pictures;
     }
-    public void addUrls(String url){
-        pictures.add(url);
-        notifyDataSetChanged();
-    }
 
 
-    public ArrayList<String> getPictures() {
-        return pictures;
-    }
-
-    public void setPictures(ArrayList<String> pictures) {
-        this.pictures = pictures;
-    }
 
     @Override
     public int getCount() {
@@ -65,7 +55,7 @@ public class SliderAdapter extends PagerAdapter {
         View view=layoutInflater.inflate(R.layout.product_slider,container,false);
         ImageView imageView=view.findViewById(R.id.slider_image);
         Glide.with(context)
-                .load(pictures.get(position))
+                .load(pictures.get(position).getImageUrl())
                 .into(imageView);
 
         view.setOnClickListener(new View.OnClickListener() {
@@ -75,8 +65,6 @@ public class SliderAdapter extends PagerAdapter {
                 context.startActivity(i);
             }
         });
-
-//        imageView.setImageResource(images[position]);
 
         container.addView(view);
 

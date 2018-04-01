@@ -14,6 +14,8 @@ import android.widget.Toast;
 import com.appsinventiv.classifiedads.Classes.PrefManager;
 import com.appsinventiv.classifiedads.Model.User;
 import com.appsinventiv.classifiedads.R;
+import com.appsinventiv.classifiedads.Utils.CommonUtils;
+import com.appsinventiv.classifiedads.Utils.SharedPrefs;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
@@ -116,7 +118,7 @@ public class Register extends AppCompatActivity {
                     city = e_city.getText().toString();
 
                     if (userslist.contains("" + username)) {
-                        Toast.makeText(Register.this, "Username is already taken\nPlease choose another", Toast.LENGTH_SHORT).show();
+                        CommonUtils.showToast("Username is already taken\nPlease choose another");
                     } else {
                         int randomPIN = (int) (Math.random() * 900000) + 100000;
                         mDatabase
@@ -125,14 +127,14 @@ public class Register extends AppCompatActivity {
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        Toast.makeText(Register.this, "Thankyou for registering", Toast.LENGTH_SHORT).show();
-                                        sharedPref(username, "" + phone, "no", city);
+                                        CommonUtils.showToast("Thank you for registering");
+                                        SharedPrefs.setUsername(username);
                                         launchHomeScreen();
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(Register.this, "There was some error", Toast.LENGTH_SHORT).show();
+                                CommonUtils.showToast("There was some error");
                             }
                         });
                     }
@@ -145,16 +147,6 @@ public class Register extends AppCompatActivity {
 
     }
 
-    public void sharedPref(String userName, String phoneNumber, String active, String city) {
-        SharedPreferences pref = getSharedPreferences("userDetails", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putString("username", userName);
-        editor.putString("active", active);
-        editor.putString("phone", phoneNumber);
-        editor.putString("city", city);
-
-        editor.apply();
-    }
 
     private void launchHomeScreen() {
         prefManager.setFirstTimeLaunch(false);

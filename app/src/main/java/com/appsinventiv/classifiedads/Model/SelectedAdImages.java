@@ -9,20 +9,22 @@ import java.net.URI;
  */
 
 public class SelectedAdImages {
-    public Uri imageUri;
+   String url;
 
     public SelectedAdImages() {
     }
 
-    public SelectedAdImages(Uri imageUri) {
-        this.imageUri = imageUri;
+    public SelectedAdImages(String url) {
+
+        this.url = url;
     }
 
-    public Uri getImageUri() {
-        return imageUri;
+
+    public String getUrl() {
+        return url;
     }
 
-    public void setImageUri(Uri imageUri) {
-        this.imageUri = imageUri;
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

@@ -5,13 +5,13 @@ package com.appsinventiv.classifiedads.Model;
  */
 
 public class AdDetails {
-    String title, description, username, phone, city, picUrl, isActive, mainCategory, childCategory, subChild;
+    String title, description, username, phone, city, picUrl, isActive, mainCategory, childCategory;
     long time, price, views;
 
     public AdDetails() {
     }
 
-    public AdDetails(String title, String description, String username, String phone, String city, String picUrl, String isActive, String mainCategory, String childCategory, String subChild, long time, long price, long views) {
+    public AdDetails(String title, String description, String username, String phone, String city, String picUrl, String isActive, String mainCategory, String childCategory, long time, long price, long views) {
         this.title = title;
         this.description = description;
         this.username = username;
@@ -21,7 +21,6 @@ public class AdDetails {
         this.isActive = isActive;
         this.mainCategory = mainCategory;
         this.childCategory = childCategory;
-        this.subChild = subChild;
         this.time = time;
         this.price = price;
         this.views = views;
@@ -99,13 +98,7 @@ public class AdDetails {
         this.childCategory = childCategory;
     }
 
-    public String getSubChild() {
-        return subChild;
-    }
 
-    public void setSubChild(String subChild) {
-        this.subChild = subChild;
-    }
 
     public long getTime() {
         return time;

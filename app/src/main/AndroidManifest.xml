@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
+        android:name=".ClassifiedAdsApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -37,7 +38,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".Activities.AdPage"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".Activities.Register"
             android:screenOrientation="portrait" />
@@ -53,24 +55,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.AdPictures"
-            android:screenOrientation="portrait"
-            />
-        <activity android:name=".Category.ChildCategory"
-            android:screenOrientation="portrait"
-            />
-        <activity android:name=".Category.MainCategory"
-            android:screenOrientation="portrait"
-            />
-        <activity android:name=".Category.SubChild"
-            android:screenOrientation="portrait"
-            />
-        <activity android:name=".Activities.CategoryChooser"
-            android:screenOrientation="portrait"
-            />
-        <activity android:name=".Activities.SearchResults"
-            android:screenOrientation="portrait"
-            />
+        <activity
+            android:name=".Activities.AdPictures"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Category.ChildCategory"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Category.MainCategory"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activities.SearchResults"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Activities.Filters"
             android:label="@string/title_activity_filters"
@@ -81,8 +77,10 @@
             android:label="@string/title_activity_home_page"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Activities.ViewPictures"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".Activities.ViewPictures"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Activities.MoreAdsByUser"></activity>
     </application>
 
 </manifest>

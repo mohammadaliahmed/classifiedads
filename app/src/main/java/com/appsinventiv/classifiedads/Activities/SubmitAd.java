@@ -1,5 +1,6 @@
 package com.appsinventiv.classifiedads.Activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -9,16 +10,17 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 
-import com.appsinventiv.classifiedads.Adapter.HorizontalAdapter;
+import com.appsinventiv.classifiedads.Adapter.HomePageMobileAdsAdapter;
+import com.appsinventiv.classifiedads.Adapter.SelectedImagesAdapter;
 import com.appsinventiv.classifiedads.Category.MainCategory;
-import com.appsinventiv.classifiedads.Category.SubChild;
 import com.appsinventiv.classifiedads.Classes.GifSizeFilter;
 import com.appsinventiv.classifiedads.Model.AdDetails;
-import com.appsinventiv.classifiedads.Model.Data;
+import com.appsinventiv.classifiedads.Model.PicturesModel;
 import com.appsinventiv.classifiedads.Model.SelectedAdImages;
 import com.appsinventiv.classifiedads.R;
+import com.appsinventiv.classifiedads.Utils.CommonUtils;
+import com.appsinventiv.classifiedads.Utils.SharedPrefs;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.StorageReference;
@@ -35,30 +37,18 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.media.ExifInterface;
-import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.appsinventiv.classifiedads.R;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
@@ -70,11 +60,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 public class SubmitAd extends AppCompatActivity {
@@ -82,17 +67,16 @@ public class SubmitAd extends AppCompatActivity {
     Button pickPicture, submitAd;
     EditText title, price, description;
     DatabaseReference mDatabase;
-    ImageView picture;
 
     ArrayList<String> imageUrl;
 
     SharedPreferences userPref;
     String username, city, phonenumber;
-    RecyclerView horizontal_recycler_view;
-    HorizontalAdapter horizontalAdapter;
-    private List<Data> data;
+
     List<Uri> mSelected;
-    List<Uri> imagesSelected;
+    ArrayList<SelectedAdImages> selectedAdImages;
+    SelectedImagesAdapter adapter;
+
 
     ArrayList<String> adCover;
     private static final int REQUEST_CODE_CHOOSE = 23;
@@ -101,11 +85,32 @@ public class SubmitAd extends AppCompatActivity {
     long time;
     EditText usernameField, phoneField, locationField;
     TextView chooseCategoryText;
+    public static String mainCategory, childCategory;
+    public static Activity fa;
+
+    @Override
+    protected void onPostResume() {
+        if (mainCategory == null) {
+            chooseCategoryText.setText("Choose category");
+        } else {
+            if (childCategory != null) {
+//                if (subChild != null) {
+//                    chooseCategoryText.setText(mainCategory + " > " + childCategory + " > " + subChild);
+//                } else {
+                chooseCategoryText.setText(mainCategory + " > " + childCategory);
+//                }
+            } else {
+                chooseCategoryText.setText(mainCategory);
+            }
+        }
+        super.onPostResume();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_submit_ad);
+        fa = this;
         db = FirebaseFirestore.getInstance();
         mStorageRef = FirebaseStorage.getInstance().getReference();
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -124,14 +129,13 @@ public class SubmitAd extends AppCompatActivity {
         phoneField = (EditText) findViewById(R.id.phone);
         locationField = (EditText) findViewById(R.id.location);
 
-        chooseCategoryText=(TextView)findViewById(R.id.choose_category);
+        chooseCategoryText = (TextView) findViewById(R.id.choose_category);
 
-        chooseCategoryText.setText("Choose category");
 
         chooseCategoryText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i =new Intent(SubmitAd.this, MainCategory.class);
+                Intent i = new Intent(SubmitAd.this, MainCategory.class);
                 startActivity(i);
 
             }
@@ -157,21 +161,12 @@ public class SubmitAd extends AppCompatActivity {
         phoneField.setText("" + phonenumber);
         locationField.setText(city);
 
-        horizontal_recycler_view = (RecyclerView) findViewById(R.id.horizontal_recycler_view);
-
-        data = fill_with_data();
-
-
-        horizontalAdapter = new HorizontalAdapter(data, getApplication());
-
-        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(SubmitAd.this, LinearLayoutManager.HORIZONTAL, false);
-        horizontal_recycler_view.setLayoutManager(horizontalLayoutManager);
-        horizontal_recycler_view.setAdapter(horizontalAdapter);
-
+        showPickedPictures();
 
         pickPicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                selectedAdImages.clear();
                 Matisse.from(SubmitAd.this)
                         .choose(MimeType.allOf())
                         .countable(true)
@@ -187,28 +182,28 @@ public class SubmitAd extends AppCompatActivity {
 
     }
 
-    public List<Data> fill_with_data() {
-
-        List<Data> pickedPictures = new ArrayList<>();
-
-        pickedPictures.add(new Data(R.drawable.car));
-        pickedPictures.add(new Data(R.drawable.car));
-        pickedPictures.add(new Data(R.drawable.car));
-        pickedPictures.add(new Data(R.drawable.car));
-        pickedPictures.add(new Data(R.drawable.car));
-
-        return pickedPictures;
+    private void showPickedPictures() {
+        selectedAdImages = new ArrayList<>();
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.horizontal_recycler_view);
+        LinearLayoutManager horizontalLayoutManagaer
+                = new LinearLayoutManager(SubmitAd.this, LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(horizontalLayoutManagaer);
+        adapter = new SelectedImagesAdapter(SubmitAd.this, selectedAdImages);
+        recyclerView.setAdapter(adapter);
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         // Check which request we're responding to
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
             mSelected = Matisse.obtainResult(data);
-            imagesSelected = mSelected;
-            horizontalAdapter.notifyDataSetChanged();
+
+            adapter.notifyDataSetChanged();
             for (Uri img :
                     mSelected) {
+                selectedAdImages.add(new SelectedAdImages("" + img));
+                adapter.notifyDataSetChanged();
                 imageUrl.add(compressImage("" + img));
             }
         }
@@ -223,11 +218,12 @@ public class SubmitAd extends AppCompatActivity {
                 AdDescription = description.getText().toString();
         long AdPrice = Long.parseLong(price.getText().toString());
 
-        DatabaseReference pushRef = mDatabase.child("ads").child("" + time);
+        String username = SharedPrefs.getUsername();
+        mDatabase.child("users").child(username).child("adsPosted").child("" + time).setValue("" + time);
 
-        pushRef.setValue(new AdDetails(Adtitle, AdDescription, username, "" + phonenumber, city, ""
-                , "yes", "vehicles", "cars",
-                "toyota", time, AdPrice, 0)).addOnSuccessListener(new OnSuccessListener<Void>() {
+        mDatabase.child("ads").child("" + time).setValue(new AdDetails(Adtitle, AdDescription, username, "" + phonenumber, city, ""
+                , "yes", mainCategory, childCategory,
+                time, AdPrice, 0)).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
 
@@ -239,20 +235,22 @@ public class SubmitAd extends AppCompatActivity {
             }
         });
 
+        int count = 0;
+        for (String img : imageUrl) {
 
-//        Collections.reverse(imageUrl);
-        for (String img : imageUrl
-                ) {
-
-            putPictures(img, "" + time);
+            putPictures(img, "" + time, count);
+            count++;
         }
 
         Intent i = new Intent(SubmitAd.this, SuccessPage.class);
         startActivity(i);
+        mainCategory = null;
+//        subChild = null;
+        childCategory = null;
         finish();
     }
 
-    public void putPictures(String path, final String key) {
+    public void putPictures(String path, final String key, final int count) {
 //         file = data.getData();
         String imgName = Long.toHexString(Double.doubleToLongBits(Math.random()));
 
@@ -271,10 +269,9 @@ public class SubmitAd extends AppCompatActivity {
 
                         Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
-                        mDatabase.child("ads").child("" + time).child("pictures").push().setValue("" + downloadUrl);
-
-                        adCover.add("" + downloadUrl);
-                        mDatabase.child("ads").child("" + time).child("picUrl").setValue("" + downloadUrl);
+                        mDatabase.child("ads").child("" + time).child("pictures")
+                                .push()
+                                .setValue(new PicturesModel("" + downloadUrl, count));
 
                     }
                 })
@@ -449,5 +446,6 @@ public class SubmitAd extends AppCompatActivity {
 
         return inSampleSize;
     }
+
 }
 

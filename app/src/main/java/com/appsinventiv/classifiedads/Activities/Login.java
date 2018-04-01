@@ -15,6 +15,8 @@ import com.appsinventiv.classifiedads.Category.MainCategory;
 import com.appsinventiv.classifiedads.Classes.PrefManager;
 import com.appsinventiv.classifiedads.Model.User;
 import com.appsinventiv.classifiedads.R;
+import com.appsinventiv.classifiedads.Utils.CommonUtils;
+import com.appsinventiv.classifiedads.Utils.SharedPrefs;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -110,12 +112,10 @@ public class Login extends AppCompatActivity {
                             User user = dataSnapshot.child("" + username).getValue(User.class);
                             if (user != null) {
                                 if (user.getPassword().equals(password)) {
-//                                            Intent i=new Intent(Login.this,MainActivity.class);
-//                                            startActivity(i);
-                                    sharedPref(user.getUsername(), "" + user.getPhone(), user.getActive(), user.getCity());
+                                    SharedPrefs.setUsername(user.getUsername());
                                     launchHomeScreen();
                                 } else {
-                                    Toast.makeText(Login.this, "Wrong password\nPlease try again", Toast.LENGTH_SHORT).show();
+                                    CommonUtils.showToast("Wrong password\nPlease try again");
                                 }
                             }
                         }
@@ -127,23 +127,13 @@ public class Login extends AppCompatActivity {
                     }
                 });
             } else {
-                Toast.makeText(this, "Username does not exist\nPlease signup", Toast.LENGTH_SHORT).show();
+                CommonUtils.showToast("Username does not exist\nPlease signup");
 
             }
         }
 
     }
 
-    public void sharedPref(String userName, String phoneNumber, String active, String city) {
-        SharedPreferences pref = getSharedPreferences("userDetails", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putString("username", userName);
-        editor.putString("active", active);
-        editor.putString("phone", phoneNumber);
-        editor.putString("city", city);
-
-        editor.apply();
-    }
 
     private void launchHomeScreen() {
         prefManager.setFirstTimeLaunch(false);
