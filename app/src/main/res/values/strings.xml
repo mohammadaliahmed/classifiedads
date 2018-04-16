@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Ads</string>
+    <string name="app_name">Mobile Mart</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -15,6 +15,9 @@
     <string name="title_activity_search_results">SearchResults</string>
     <string name="title_activity_filters">Filters</string>
     <string name="title_activity_home_page">HomePage</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

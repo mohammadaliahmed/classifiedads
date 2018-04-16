@@ -17,6 +17,7 @@ import com.appsinventiv.classifiedads.Model.AdDetails;
 import com.appsinventiv.classifiedads.Model.PicturesModel;
 import com.appsinventiv.classifiedads.R;
 import com.appsinventiv.classifiedads.Utils.CommonUtils;
+import com.appsinventiv.classifiedads.Utils.GetAdAddress;
 import com.appsinventiv.classifiedads.ViewHolder.ItemViewHolder;
 import com.bumptech.glide.Glide;
 import com.google.firebase.database.ChildEventListener;
@@ -58,8 +59,12 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(final ItemAdapter.ViewHolder holder, int position) {
         final AdDetails model = itemList.get(position);
+        DecimalFormat formatter = new DecimalFormat("#,###,###");
+        String formatedPrice = formatter.format(model.getPrice());
         holder.title.setText(model.getTitle());
-        holder.price.setText("Rs " + model.getPrice());
+        holder.location.setText(GetAdAddress.getAddress(context,model.getLattitude(),model.getLongitude()));
+
+        holder.price.setText("Rs " + formatedPrice);
         holder.time.setText(getFormattedDate(context, model.getTime()));
         mDatabase.child("ads").child(""+model.getTime()).child("pictures").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -117,7 +122,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView title, price, time;
+        public TextView title, price, time,location;
         public ImageView thumbnail;
 
         public ViewHolder(View itemView) {
@@ -125,6 +130,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             title = itemView.findViewById(R.id.titleItem);
             price = itemView.findViewById(R.id.price);
             time = itemView.findViewById(R.id.time);
+
+            location = itemView.findViewById(R.id.location);
             thumbnail = itemView.findViewById(R.id.thumbnail);
 
         }

@@ -23,29 +23,28 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".Activities.MainActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".Activities.AddItem"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Activities.SubmitAd"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name=".Activities.SuccessPage"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Activities.AdPage"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Activities.Register"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".Activities.Login"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
         <activity
             android:name=".Activities.Splash"
             android:theme="@style/AppTheme.NoActionBar">
@@ -80,7 +79,24 @@
         <activity
             android:name=".Activities.ViewPictures"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Activities.MoreAdsByUser"></activity>
+        <activity android:name=".Activities.MoreAdsByUser" />
+        <activity android:name=".Activities.MainActivity" />
+        <activity
+            android:name=".Activities.MyAds"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <service android:name=".Utils.MyFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".Utils.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <activity android:name=".Activities.GPSTrackerActivity"></activity>
     </application>
 
 </manifest>

@@ -29,7 +29,7 @@ import java.util.List;
  * Created by AliAh on 13/01/2018.
  */
 
-public class HomePageCarsAdsAdapter extends RecyclerView.Adapter<HomePageCarsAdsAdapter.ViewHolder>{
+public class HomepageSamsungAdapter extends RecyclerView.Adapter<HomepageSamsungAdapter.ViewHolder>{
 
     List<AdDetails> mobileAds;
     Context context;
@@ -38,7 +38,7 @@ public class HomePageCarsAdsAdapter extends RecyclerView.Adapter<HomePageCarsAds
     DatabaseReference mDatabase;
 
     // data is passed into the constructor
-    public HomePageCarsAdsAdapter(Context context, ArrayList<AdDetails> mobileAds) {
+    public HomepageSamsungAdapter(Context context, ArrayList<AdDetails> mobileAds) {
         this.mInflater = LayoutInflater.from(context);
         this.mobileAds = mobileAds;
         this.context=context;
@@ -46,20 +46,20 @@ public class HomePageCarsAdsAdapter extends RecyclerView.Adapter<HomePageCarsAds
 
     }
     @Override
-    public HomePageCarsAdsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public HomepageSamsungAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.ad_card_layout_home, parent, false);
-        HomePageCarsAdsAdapter.ViewHolder viewHolder = new HomePageCarsAdsAdapter.ViewHolder(view);
+        HomepageSamsungAdapter.ViewHolder viewHolder = new HomepageSamsungAdapter.ViewHolder(view);
         return viewHolder;    }
 
 
     @Override
-    public void onBindViewHolder(final HomePageCarsAdsAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final HomepageSamsungAdapter.ViewHolder holder, int position) {
         final AdDetails model = mobileAds.get(position);
         final AdDetails adId=mobileAds.get(position);
         DecimalFormat formatter = new DecimalFormat("##,###,###");
         String formatedPrice = formatter.format(model.getPrice());
         holder.adTitleView.setText(model.getTitle());
-        holder.adPriceView.setText(""+formatedPrice);
+        holder.adPriceView.setText("Rs "+formatedPrice);
         mDatabase.child("ads").child(""+model.getTime()).child("pictures").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

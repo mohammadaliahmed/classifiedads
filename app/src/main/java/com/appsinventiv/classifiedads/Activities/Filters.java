@@ -13,14 +13,45 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.appsinventiv.classifiedads.Category.MainCategory;
 import com.appsinventiv.classifiedads.R;
 
 public class Filters extends AppCompatActivity {
-    Button  search;
-    EditText keyword,min,max;
+    Button search;
+    EditText keyword, min, max;
     String location;
+    TextView chooseCategory;
+    public static String mainCategory, childCategory;
+
+
+    @Override
+    protected void onPostResume() {
+        if (mainCategory == null) {
+            chooseCategory.setText("Choose category");
+        } else {
+            if (childCategory != null) {
+//                if (subChild != null) {
+//                    chooseCategoryText.setText(mainCategory + " > " + childCategory + " > " + subChild);
+//                } else {
+                chooseCategory.setText(mainCategory + " > " + childCategory);
+//                }
+            } else {
+                chooseCategory.setText(mainCategory);
+            }
+        }
+        super.onPostResume();
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        finish();
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,12 +62,23 @@ public class Filters extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-        search=(Button)findViewById(R.id.search);
-        keyword=(EditText)findViewById(R.id.keyword);
-        min=(EditText)findViewById(R.id.minprice);
-        max=(EditText) findViewById(R.id.maxprice);
+        search = (Button) findViewById(R.id.search);
+        keyword = (EditText) findViewById(R.id.keyword);
+        min = (EditText) findViewById(R.id.minprice);
+        max = (EditText) findViewById(R.id.maxprice);
+        chooseCategory=findViewById(R.id.choose_category);
 
-        final String[] items = new String[] {"Select One", "Islamabad", "Karachi","Faisalabad","Peshawar"};
+
+        chooseCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Filters.this, MainCategory.class);
+                i.putExtra("fromFilters","abc");
+                startActivity(i);
+            }
+        });
+
+        final String[] items = new String[]{"Select One", "Islamabad", "Karachi", "Faisalabad", "Peshawar"};
         Spinner spinner = (Spinner) findViewById(R.id.locationchoose);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, items);
@@ -48,7 +90,7 @@ public class Filters extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
                 items[0] = "Lahore";
 //                 items[position];
-                location=items[position];
+                location = items[position];
 //                Toast.makeText(Filters.this, ""+items[position], Toast.LENGTH_SHORT).show();
             }
 
@@ -61,18 +103,30 @@ public class Filters extends AppCompatActivity {
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                long minPrice,maxPrice;
-                        String searchTerm;
-                minPrice=Long.parseLong(min.getText().toString());
-                maxPrice=Long.parseLong(max.getText().toString());
+                long minPrice = 0;
+                long maxPrice = 99999999L;
+                String searchTerm;
+                if (min.getText().toString().length() == 0 && max.getText().toString().length() == 0) {
+
+                } else if (min.getText().toString().length() > 0 && max.getText().toString().length() == 0) {
+                    minPrice = Long.parseLong(min.getText().toString());
 
 
-                searchTerm=keyword.getText().toString();
-                Intent intent=new Intent(Filters.this,SearchResults.class);
-                intent.putExtra("searchTerm",searchTerm);
-                intent.putExtra("minPrice",minPrice);
-                intent.putExtra("maxPrice",maxPrice);
-                intent.putExtra("location",location);
+                } else if (min.getText().toString().length() == 0 && max.getText().toString().length() > 0) {
+                    maxPrice = Long.parseLong(max.getText().toString());
+
+                } else {
+                    minPrice = Long.parseLong(min.getText().toString());
+                    maxPrice = Long.parseLong(max.getText().toString());
+                }
+
+                searchTerm = keyword.getText().toString();
+                Intent intent = new Intent(Filters.this, SearchResults.class);
+                intent.putExtra("searchTerm", searchTerm);
+                intent.putExtra("minPrice", minPrice);
+                intent.putExtra("maxPrice", maxPrice);
+                intent.putExtra("location", location);
+                intent.putExtra("category", mainCategory);
 
                 startActivity(intent);
 
@@ -81,10 +135,8 @@ public class Filters extends AppCompatActivity {
         });
 
 
-
-
-
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -92,5 +144,6 @@ public class Filters extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 
 }

@@ -12,25 +12,66 @@ import com.appsinventiv.classifiedads.ClassifiedAdsApplication;
 public class SharedPrefs {
     Context context;
 
-
-
-
     private SharedPrefs() {
 
     }
 
     public static String getUsername() {
-        SharedPreferences pref;
-        String username;
-        pref = ClassifiedAdsApplication.getInstance().getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
-        username = pref.getString("username", "");
-        return username;
+        return preferenceGetter("username");
     }
 
     public static void setUsername(String username) {
+        preferenceSetter("username", username);
+    }
+
+
+    public static String getSplashImage() {
+        return preferenceGetter("splash");
+    }
+
+    public static void setSplashImage(String value) {
+        preferenceSetter("splash", value);
+    }
+
+
+
+    public static String getUserCity() {
+        return preferenceGetter("city");
+    }
+
+    public static void setIsLoggedIn(String value) {
+
+        preferenceSetter("isLoggedIn", value);
+    }
+    public static String getIsLoggedIn() {
+        return preferenceGetter("isLoggedIn");
+    }
+
+    public static void setUserCity(String value) {
+
+        preferenceSetter("city", value);
+    }
+
+    public static void setFcmKey(String fcmKey){
+        preferenceSetter("fcmKey", fcmKey);
+    }
+    public static String getFcmKey() {
+        return preferenceGetter("fcmKey");
+    }
+
+
+    public static void preferenceSetter(String key, String value){
         SharedPreferences pref = ClassifiedAdsApplication.getInstance().getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        editor.putString("username", username);
+        editor.putString(key, value);
         editor.apply();
+    }
+
+      public static String  preferenceGetter(String key){
+          SharedPreferences pref;
+          String value="";
+          pref = ClassifiedAdsApplication.getInstance().getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
+          value = pref.getString(key, "");
+          return value;
     }
 }

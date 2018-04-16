@@ -8,17 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.appsinventiv.classifiedads.Activities.AdPage;
 import com.appsinventiv.classifiedads.Activities.MainActivity;
 import com.appsinventiv.classifiedads.Classes.CategoryClass;
-import com.appsinventiv.classifiedads.Model.AdDetails;
 import com.appsinventiv.classifiedads.R;
-import com.appsinventiv.classifiedads.Utils.Constants;
-import com.bumptech.glide.Glide;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +56,7 @@ public class HomeCategoryAdapter extends RecyclerView.Adapter<HomeCategoryAdapte
             public void onClick(View view) {
 //                Toast.makeText(context, ""+model.getTitle(), Toast.LENGTH_SHORT).show();
                 Intent i =new Intent(context,MainActivity.class);
+                i.putExtra("category",model.getTitle());
 
                 context.startActivity(i);
 ////

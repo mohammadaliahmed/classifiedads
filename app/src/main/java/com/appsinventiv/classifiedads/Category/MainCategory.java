@@ -1,6 +1,7 @@
 package com.appsinventiv.classifiedads.Category;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -8,10 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 
-import com.appsinventiv.classifiedads.Activities.MainActivity;
 import com.appsinventiv.classifiedads.Adapter.CategoryAdapter;
-import com.appsinventiv.classifiedads.Adapter.ItemAdapter;
-import com.appsinventiv.classifiedads.Model.AdDetails;
 import com.appsinventiv.classifiedads.Model.CategoryItem;
 import com.appsinventiv.classifiedads.R;
 
@@ -25,11 +23,14 @@ public class MainCategory extends AppCompatActivity {
     LinearLayoutManager layoutManager;
     CategoryAdapter adapter;
     List<CategoryItem> itemList = new ArrayList<CategoryItem>();
+    String intentFromFilters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_category);
+        MainCategory.this.setTitle("Choose category ");
+
         fa = this;
         String category = "main";
         if (getSupportActionBar() != null) {
@@ -45,58 +46,57 @@ public class MainCategory extends AppCompatActivity {
         adapter = new CategoryAdapter(itemList, MainCategory.this, MainCategory.this, category);
         recyclerView.setAdapter(adapter);
 
-        CategoryItem categoryItem = new CategoryItem("Samsung", R.drawable.car_category);
+
+        Intent i = getIntent();
+        intentFromFilters = i.getStringExtra("fromFilters");
+
+        CategoryItem categoryItem;
+
+        if (intentFromFilters != null) {
+            categoryItem = new CategoryItem("All ads", R.drawable.all_ads_category);
+            itemList.add(categoryItem);
+
+            categoryItem = new CategoryItem("Samsung", R.drawable.samsung_category);
+            itemList.add(categoryItem);
+        } else {
+            categoryItem = new CategoryItem("Samsung", R.drawable.samsung_category);
+            itemList.add(categoryItem);
+        }
+        categoryItem = new CategoryItem("Apple", R.drawable.apple_category);
         itemList.add(categoryItem);
 
-        categoryItem = new CategoryItem("Apple", R.drawable.car_category);
-        itemList.add(categoryItem);
-
-        categoryItem = new CategoryItem("OPPO", R.drawable.car_category);
-        itemList.add(categoryItem);
-
-        categoryItem = new CategoryItem("Lenovo", R.drawable.car_category);
-        itemList.add(categoryItem);
-
-        categoryItem = new CategoryItem("Voice", R.drawable.car_category);
-        itemList.add(categoryItem);
-
-        categoryItem = new CategoryItem("Xiomi", R.drawable.car_category);
-        itemList.add(categoryItem);
-
-        categoryItem = new CategoryItem("Infinix", R.drawable.car_category);
-        itemList.add(categoryItem);
-
-
-        categoryItem = new CategoryItem("Nokia", R.drawable.car_category);
-        itemList.add(categoryItem);
-
-        categoryItem = new CategoryItem("LG", R.drawable.car_category);
-        itemList.add(categoryItem);
-
-        categoryItem = new CategoryItem("Huawei", R.drawable.car_category);
-        itemList.add(categoryItem);
-
-        categoryItem = new CategoryItem("Sony", R.drawable.car_category);
-        itemList.add(categoryItem);
-
-        categoryItem = new CategoryItem("HTC", R.drawable.car_category);
-        itemList.add(categoryItem);
-
-        categoryItem = new CategoryItem("Motorola", R.drawable.car_category);
+        categoryItem = new CategoryItem("OPPO", R.drawable.oppo_category);
         itemList.add(categoryItem);
 
 
-        categoryItem = new CategoryItem("Haier", R.drawable.car_category);
+
+        categoryItem = new CategoryItem("Infinix", R.drawable.infinix_category);
         itemList.add(categoryItem);
 
 
-        categoryItem = new CategoryItem("BlackBerry", R.drawable.car_category);
+        categoryItem = new CategoryItem("Nokia", R.drawable.nokia_category);
         itemList.add(categoryItem);
+
+        categoryItem = new CategoryItem("LG", R.drawable.lg_category);
+        itemList.add(categoryItem);
+
+        categoryItem = new CategoryItem("Huawei", R.drawable.huawei_category);
+        itemList.add(categoryItem);
+
+
+        categoryItem = new CategoryItem("HTC", R.drawable.htc_category);
+        itemList.add(categoryItem);
+
+        categoryItem = new CategoryItem("Motorola", R.drawable.motorola_category);
+        itemList.add(categoryItem);
+
 
 
         adapter.notifyDataSetChanged();
 
+
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {

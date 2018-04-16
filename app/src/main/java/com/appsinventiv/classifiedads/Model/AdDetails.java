@@ -5,25 +5,44 @@ package com.appsinventiv.classifiedads.Model;
  */
 
 public class AdDetails {
-    String title, description, username, phone, city, picUrl, isActive, mainCategory, childCategory;
+    String title, description, username, phone, city, picUrl, adStatus, mainCategory, childCategory;
     long time, price, views;
+    Double lattitude,longitude;
 
     public AdDetails() {
     }
 
-    public AdDetails(String title, String description, String username, String phone, String city, String picUrl, String isActive, String mainCategory, String childCategory, long time, long price, long views) {
+    public AdDetails(String title, String description, String username, String phone, String city, String picUrl, String adStatus, String mainCategory, String childCategory, long time, long price, long views, Double lattitude, Double longitude) {
         this.title = title;
         this.description = description;
         this.username = username;
         this.phone = phone;
         this.city = city;
         this.picUrl = picUrl;
-        this.isActive = isActive;
+        this.adStatus = adStatus;
         this.mainCategory = mainCategory;
         this.childCategory = childCategory;
         this.time = time;
         this.price = price;
         this.views = views;
+        this.lattitude = lattitude;
+        this.longitude = longitude;
+    }
+
+    public Double getLattitude() {
+        return lattitude;
+    }
+
+    public void setLattitude(Double lattitude) {
+        this.lattitude = lattitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     public String getTitle() {
@@ -74,12 +93,12 @@ public class AdDetails {
         this.picUrl = picUrl;
     }
 
-    public String getIsActive() {
-        return isActive;
+    public String getAdStatus() {
+        return adStatus;
     }
 
-    public void setIsActive(String isActive) {
-        this.isActive = isActive;
+    public void setAdStatus(String adStatus) {
+        this.adStatus = adStatus;
     }
 
     public String getMainCategory() {

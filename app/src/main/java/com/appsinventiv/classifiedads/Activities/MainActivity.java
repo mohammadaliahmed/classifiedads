@@ -1,92 +1,67 @@
 package com.appsinventiv.classifiedads.Activities;
 
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.EditText;
+import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.appsinventiv.classifiedads.Adapter.ItemAdapter;
-import com.appsinventiv.classifiedads.Classes.ClickListener;
-import com.appsinventiv.classifiedads.Classes.RecyclerTouchListener;
 import com.appsinventiv.classifiedads.Model.AdDetails;
-import com.appsinventiv.classifiedads.Model.Item;
-import com.appsinventiv.classifiedads.Interface.OnLoadMoreListener;
 import com.appsinventiv.classifiedads.R;
-import com.appsinventiv.classifiedads.Utils.Constants;
+import com.appsinventiv.classifiedads.Utils.SharedPrefs;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     LinearLayoutManager layoutManager;
     ItemAdapter adapter;
     ArrayList<AdDetails> itemList = new ArrayList<>();
 
-    FirebaseFirestore db;
 
     SwipeRefreshLayout mSwipeRefreshLayout;
 
-    SharedPreferences userPref;
     String city;
     DatabaseReference mDatabase;
     private ProgressBar pgsBar;
+    String category;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        MainActivity.this.setTitle("Results");
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
         pgsBar = (ProgressBar) findViewById(R.id.pBar);
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        Intent i = getIntent();
+
+        category = i.getStringExtra("category");
+        if (category != null) {
+            MainActivity.this.setTitle(category);
+        }
 
 
 //        SubmitAd.fa.finish();
@@ -118,26 +93,12 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         adapter = new ItemAdapter(this, itemList);
         recyclerView.setAdapter(adapter);
-        userPref = getSharedPreferences("userDetails", Context.MODE_PRIVATE);
-        city=userPref.getString("city","");
 
-        db = FirebaseFirestore.getInstance();
         pgsBar.setVisibility(View.VISIBLE);
 
 
         loadData();
 
-
-
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
     }
 
     public void refreshItems() {
@@ -153,14 +114,16 @@ public class MainActivity extends AppCompatActivity
 
     public void loadData() {
 
-     mDatabase.child("ads").limitToLast(100).addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                        if (dataSnapshot != null) {
-                            AdDetails model = dataSnapshot.getValue(AdDetails.class);
-                            if (model != null) {
-
-
+        mDatabase.child("ads").limitToLast(100).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if (dataSnapshot != null) {
+                    AdDetails model = dataSnapshot.getValue(AdDetails.class);
+                    pgsBar.setVisibility(View.GONE);
+                    if (model != null) {
+                        if (model.getCity().equals(SharedPrefs.getUserCity())) {
+                            if (model.getAdStatus().equals("Active")) {
+                                if (category == null || category.equals("") || category.equals("All Ads")) {
                                     itemList.add(model);
                                     Collections.sort(itemList, new Comparator<AdDetails>() {
                                         @Override
@@ -172,48 +135,62 @@ public class MainActivity extends AppCompatActivity
 
                                         }
                                     });
-                                    pgsBar.setVisibility(View.GONE);
+
 
                                     adapter.notifyDataSetChanged();
-                                }
+                                } else if (category != null || !category.equals("")) {
+                                    if (model.getMainCategory().equals(category)) {
 
+                                        itemList.add(model);
+                                        Collections.sort(itemList, new Comparator<AdDetails>() {
+                                            @Override
+                                            public int compare(AdDetails listData, AdDetails t1) {
+                                                Long ob1 = listData.getTime();
+                                                Long ob2 = t1.getTime();
+
+                                                return ob2.compareTo(ob1);
+
+                                            }
+                                        });
+                                        pgsBar.setVisibility(View.GONE);
+
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                }
+                            }
                         }
                     }
 
-                    @Override
-                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                }
+            }
 
-                    }
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-                    @Override
-                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+            }
 
-                    }
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
 
-                    @Override
-                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            }
 
-                    }
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+            }
 
-                    }
-                });
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-            finish();
-
-        }
+        finish();
     }
 
     @Override
@@ -229,44 +206,25 @@ public class MainActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
         //noinspection SimplifiableIfStatement
         if (id == R.id.add_ad) {
 
-            Intent openAdd = new Intent(MainActivity.this, SubmitAd.class);
-            startActivity(openAdd);
-        }
-        else if(id==R.id.filters){
-            Intent i=new Intent(MainActivity.this, Filters.class);
+            if (SharedPrefs.getIsLoggedIn().equals("yes")) {
+                Intent i = new Intent(MainActivity.this, SubmitAd.class);
+                startActivity(i);
+            } else {
+                Intent i = new Intent(MainActivity.this, Login.class);
+                startActivity(i);
+            }
+        } else if (id == R.id.filters) {
+            Intent i = new Intent(MainActivity.this, Filters.class);
             startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 
     public static boolean hasPermissions(Context context, String... permissions) {
@@ -279,4 +237,5 @@ public class MainActivity extends AppCompatActivity
         }
         return true;
     }
+
 }

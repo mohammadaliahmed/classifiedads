@@ -6,8 +6,6 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.appsinventiv.classifiedads.Activities.MainActivity;
-
 /**
  * Created by AliAh on 15/01/2018.
  */

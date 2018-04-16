@@ -1,11 +1,21 @@
 package com.appsinventiv.classifiedads.Utils;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.format.DateFormat;
 import android.widget.Toast;
 
 import com.appsinventiv.classifiedads.ClassifiedAdsApplication;
+import com.appsinventiv.classifiedads.Model.User;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Calendar;
 
 /**
  * Created by AliAh on 29/03/2018.
@@ -24,5 +34,25 @@ public class CommonUtils {
             }
         });
     }
+    public static String getFormattedDate(long smsTimeInMilis) {
+        Calendar smsTime = Calendar.getInstance();
+        smsTime.setTimeInMillis(smsTimeInMilis);
+
+        Calendar now = Calendar.getInstance();
+
+        final String timeFormatString = "h:mm aa";
+        final String dateTimeFormatString = "dd MMM ";
+        final long HOURS = 60 * 60 * 60;
+        if (now.get(Calendar.DATE) == smsTime.get(Calendar.DATE)) {
+            return "" + DateFormat.format(timeFormatString, smsTime);
+        } else if (now.get(Calendar.DATE) - smsTime.get(Calendar.DATE) == 1) {
+            return "Yesterday ";
+        } else if (now.get(Calendar.YEAR) == smsTime.get(Calendar.YEAR)) {
+            return DateFormat.format(dateTimeFormatString, smsTime).toString();
+        } else {
+            return DateFormat.format("dd MMM , h:mm aa", smsTime).toString();
+        }
+    }
+
 
 }

@@ -10,11 +10,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.appsinventiv.classifiedads.Activities.Filters;
 import com.appsinventiv.classifiedads.Activities.SubmitAd;
 import com.appsinventiv.classifiedads.Category.ChildCategory;
 import com.appsinventiv.classifiedads.Category.MainCategory;
 import com.appsinventiv.classifiedads.Model.CategoryItem;
 import com.appsinventiv.classifiedads.R;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -60,6 +62,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         final CategoryItem categoryItem = itemList.get(position);
         holder.title.setText(categoryItem.getItemName());
+        holder.category_image.setImageResource(categoryItem.getIcon());
+
 
         if(category.equals("child")){
             holder.category_image.setVisibility(View.GONE);
@@ -72,6 +76,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
                     if(category.equals("main")) {
 
                         SubmitAd.mainCategory = categoryItem.getItemName();
+                        Filters.mainCategory=categoryItem.getItemName();
 //                        Toast.makeText(activity, ""+categoryItem.getItemName(), Toast.LENGTH_SHORT).show();
 //                        Intent i = new Intent(ctx, ChildCategory.class);
 //                        i.putExtra("mainCategory", position);

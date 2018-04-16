@@ -83,14 +83,15 @@
 
                     <ImageView
                         android:id="@+id/back"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
-                        android:layout_marginLeft="20dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginStart="8dp"
                         android:background="@null"
-                        android:padding="5dp"
+                        android:padding="15dp"
                         android:scaleType="fitCenter"
                         android:src="@drawable/back_arrow" />
 
@@ -103,7 +104,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/card_slider"
-                android:layout_margin="5dp"
+                android:layout_margin="10dp"
 
                 card_view:cardElevation="2dp">
 
@@ -194,6 +195,7 @@
                         android:textSize="20sp" />
 
                     <View
+                        android:visibility="gone"
                         android:id="@+id/line"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
@@ -203,7 +205,7 @@
                         android:background="#e2e2e2" />
 
                     <RelativeLayout
-
+                        android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:layout_below="@id/line">
@@ -266,7 +268,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/card_ad_details"
                 android:minHeight="100dp"
-
+                android:layout_margin="10dp"
 
                 card_view:cardElevation="2dp">
 
@@ -282,7 +284,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
                 android:layout_below="@+id/descriptioncard"
-                android:layout_margin="5dp"
+                android:layout_margin="10dp"
 
                 card_view:cardElevation="2dp">
 
@@ -363,7 +365,7 @@
             android:layout_width="0dip"
             android:layout_height="50dp"
             android:layout_margin="1dp"
-            android:layout_weight=".5"
+            android:layout_weight=".33"
             android:background="@color/colorPrimary"
             android:clickable="true"
             android:foreground="?android:attr/selectableItemBackground"
@@ -383,17 +385,45 @@
                 android:text="SMS"
 
                 android:textColor="#fff"
-                android:textSize="18sp" />
+                android:textSize="14sp" />
 
         </LinearLayout>
+        <LinearLayout
+            android:id="@+id/whatsapp"
+            android:layout_width="0dip"
+            android:layout_height="50dp"
+            android:layout_margin="1dp"
+            android:layout_weight=".33"
+            android:background="@color/colorPrimary"
+            android:clickable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:textSize="12sp">
 
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_margin="5dp"
+                android:src="@drawable/ic_whatsapp" />
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Whatsapp"
+
+                android:padding="4dp"
+                android:textColor="#fff"
+                android:textSize="14sp" />
+
+        </LinearLayout>
         <LinearLayout
             android:id="@+id/call"
             android:layout_width="0dip"
             android:layout_height="50dp"
             android:layout_margin="1dp"
 
-            android:layout_weight=".5"
+            android:layout_weight=".34"
             android:background="@color/colorPrimary"
             android:clickable="true"
             android:foreground="?android:attr/selectableItemBackground"
@@ -412,7 +442,7 @@
                 android:layout_margin="5dp"
                 android:text="Call"
                 android:textColor="#fff"
-                android:textSize="18sp" />
+                android:textSize="14sp" />
 
         </LinearLayout>
     </LinearLayout>

@@ -29,7 +29,6 @@ public class MoreAdsByUser extends AppCompatActivity {
     RecyclerView recyclerView;
     LinearLayoutManager layoutManager;
     ItemAdapter adapter;
-    TextView adsBy;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,12 +39,8 @@ public class MoreAdsByUser extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
         Intent  i=getIntent();
-        String adsByUser=i.getStringExtra("adsBy");
-
-        adsBy=findViewById(R.id.adsBy);
-
-        adsBy.setText("Ads by: "+adsByUser);
-
+        final String adsByUser=i.getStringExtra("adsBy");
+        this.setTitle("Ads by "+adsByUser);
 
         recyclerView = findViewById(R.id.recyclerview);
 
@@ -55,35 +50,32 @@ public class MoreAdsByUser extends AppCompatActivity {
         adapter = new ItemAdapter(this, arrayList);
         recyclerView.setAdapter(adapter);
 
-        String username = SharedPrefs.getUsername();
-        mDatabase.child("users").child(username).child("adsPosted").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("ads").addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot != null) {
-                    for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-//                        CommonUtils.showToast(childSnapshot.getValue(String.class));
-                        getUserAds("" + childSnapshot.getValue(String.class));
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if(dataSnapshot!=null){
+                    AdDetails model=dataSnapshot.getValue(AdDetails.class);
+                    if(model!=null){
+                        if(model.getUsername().equals(adsByUser)){
+                            arrayList.add(model);
+                            adapter.notifyDataSetChanged();
+                        }
                     }
                 }
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
             }
-        });
-    }
 
-    private void getUserAds(String adId) {
-        mDatabase.child("ads").child("" + adId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
 
-                if (dataSnapshot.getValue() != null) {
-                    AdDetails adDetails = dataSnapshot.getValue(AdDetails.class);
-                    arrayList.add(adDetails);
-                    adapter.notifyDataSetChanged();
-                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
             }
 
@@ -93,6 +85,8 @@ public class MoreAdsByUser extends AppCompatActivity {
             }
         });
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

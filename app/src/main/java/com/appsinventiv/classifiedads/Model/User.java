@@ -5,12 +5,13 @@ package com.appsinventiv.classifiedads.Model;
  */
 
 public class User {
-    String name, username, email, password, phone, city, active, code,codeSent;
+    String name, username, email, password, phone, city, active, code,codeSent,fcmKey;
+    Double latitude, longitude;
 
     public User() {
     }
 
-    public User(String name, String username, String email, String password, String phone, String city, String active, String code, String codeSent) {
+    public User(String name, String username, String email, String password, String phone, String city, String active, String code, String codeSent, String fcmKey, Double latitude, Double longitude) {
         this.name = name;
         this.username = username;
         this.email = email;
@@ -20,6 +21,34 @@ public class User {
         this.active = active;
         this.code = code;
         this.codeSent = codeSent;
+        this.fcmKey = fcmKey;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getFcmKey() {
+        return fcmKey;
+    }
+
+    public void setFcmKey(String fcmKey) {
+        this.fcmKey = fcmKey;
     }
 
     public String getName() {

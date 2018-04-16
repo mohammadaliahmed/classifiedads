@@ -105,7 +105,7 @@ public class Login extends AppCompatActivity {
             username = e_username.getText().toString();
             password = e_password.getText().toString();
             if (userlist.contains(username)) {
-                mDatabase.addValueEventListener(new ValueEventListener() {
+                mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (dataSnapshot != null) {
@@ -113,6 +113,8 @@ public class Login extends AppCompatActivity {
                             if (user != null) {
                                 if (user.getPassword().equals(password)) {
                                     SharedPrefs.setUsername(user.getUsername());
+                                    SharedPrefs.setUserCity(user.getCity());
+                                    SharedPrefs.setIsLoggedIn("yes");
                                     launchHomeScreen();
                                 } else {
                                     CommonUtils.showToast("Wrong password\nPlease try again");
@@ -127,7 +129,7 @@ public class Login extends AppCompatActivity {
                     }
                 });
             } else {
-                CommonUtils.showToast("Username does not exist\nPlease signup");
+                CommonUtils.showToast("Username does not exist\nPlease Sign up");
 
             }
         }
@@ -138,7 +140,6 @@ public class Login extends AppCompatActivity {
     private void launchHomeScreen() {
         prefManager.setFirstTimeLaunch(false);
         startActivity(new Intent(Login.this, HomePage.class));
-
         finish();
     }
 }

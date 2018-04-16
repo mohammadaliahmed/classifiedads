@@ -8,14 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.appsinventiv.classifiedads.Activities.AdPage;
 import com.appsinventiv.classifiedads.Model.AdDetails;
 import com.appsinventiv.classifiedads.Model.PicturesModel;
 import com.appsinventiv.classifiedads.R;
 import com.appsinventiv.classifiedads.Utils.Constants;
-import com.appsinventiv.classifiedads.ViewHolder.ItemViewHolder;
 import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,7 +29,7 @@ import java.util.List;
  * Created by AliAh on 13/01/2018.
  */
 
-public class HomePageMobileAdsAdapter extends RecyclerView.Adapter<HomePageMobileAdsAdapter.ViewHolder>{
+public class HomepageAppleAdapter extends RecyclerView.Adapter<HomepageAppleAdapter.ViewHolder>{
 
     List<AdDetails> mobileAds;
     Context context;
@@ -40,7 +38,7 @@ public class HomePageMobileAdsAdapter extends RecyclerView.Adapter<HomePageMobil
     DatabaseReference mDatabase;
 
     // data is passed into the constructor
-    public HomePageMobileAdsAdapter(Context context, ArrayList<AdDetails> mobileAds) {
+    public HomepageAppleAdapter(Context context, ArrayList<AdDetails> mobileAds) {
         this.mInflater = LayoutInflater.from(context);
         this.mobileAds = mobileAds;
         this.context=context;
@@ -48,20 +46,20 @@ public class HomePageMobileAdsAdapter extends RecyclerView.Adapter<HomePageMobil
 
     }
     @Override
-    public HomePageMobileAdsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public HomepageAppleAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.ad_card_layout_home, parent, false);
-        HomePageMobileAdsAdapter.ViewHolder viewHolder = new HomePageMobileAdsAdapter.ViewHolder(view);
+        HomepageAppleAdapter.ViewHolder viewHolder = new HomepageAppleAdapter.ViewHolder(view);
         return viewHolder;    }
 
 
     @Override
-    public void onBindViewHolder(final HomePageMobileAdsAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final HomepageAppleAdapter.ViewHolder holder, int position) {
         final AdDetails model = mobileAds.get(position);
         final AdDetails adId=mobileAds.get(position);
         DecimalFormat formatter = new DecimalFormat("##,###,###");
         String formatedPrice = formatter.format(model.getPrice());
         holder.adTitleView.setText(model.getTitle());
-        holder.adPriceView.setText(""+formatedPrice);
+        holder.adPriceView.setText("Rs "+formatedPrice);
         mDatabase.child("ads").child(""+model.getTime()).child("pictures").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

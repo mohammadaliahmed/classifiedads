@@ -47,8 +47,9 @@ public class AdPicturesAdapter extends PagerAdapter {
         View view=layoutInflater.inflate(R.layout.ad_pictures_slider_layout,container,false);
         ImageView imageView=view.findViewById(R.id.images);
         Glide.with(context)
-                .load(pictures.get(position).getImageUrl())
+                .load(pictures.get(position).getImageUrl()).placeholder(R.drawable.placeholder)
                 .into(imageView);
+
         imageView.setOnTouchListener(new ImageMatrixTouchHandler(context));
 
 

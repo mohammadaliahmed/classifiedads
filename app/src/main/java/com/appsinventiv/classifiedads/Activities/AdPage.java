@@ -27,6 +27,7 @@ import com.appsinventiv.classifiedads.Model.AdDetails;
 import com.appsinventiv.classifiedads.Model.PicturesModel;
 import com.appsinventiv.classifiedads.R;
 import com.appsinventiv.classifiedads.Utils.CommonUtils;
+import com.appsinventiv.classifiedads.Utils.GetAdAddress;
 import com.appsinventiv.classifiedads.Utils.SharedPrefs;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -38,12 +39,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 
 
@@ -57,8 +52,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class AdPage extends AppCompatActivity {
-    TextView title, price, price1, date1, category, time, city, description, views, username,viewMore;
-    FirebaseFirestore db;
+    TextView title, price, price1, date1, category, time, city, description, views, username, viewMore, location;
     ViewPager mViewPager;
     public ArrayList<PicturesModel> picUrls = new ArrayList<>();
 
@@ -66,7 +60,7 @@ public class AdPage extends AppCompatActivity {
     long viewCount;
     String adId;
     ProgressDialog progressDialog;
-    LinearLayout call, sms;
+    LinearLayout call, sms, whatsapp;
     String phoneNumber;
     Button favouriteAd;
     DatabaseReference mDatabase;
@@ -74,6 +68,7 @@ public class AdPage extends AppCompatActivity {
     DotsIndicator dotsIndicator;
     ImageView back;
     String adBy;
+    String address;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,18 +90,18 @@ public class AdPage extends AppCompatActivity {
         price1 = findViewById(R.id.price1);
         date1 = findViewById(R.id.date1);
         category = findViewById(R.id.category);
-        favouriteAd=findViewById(R.id.favouriteAd);
-        viewMore=findViewById(R.id.viewMoreAds);
+        favouriteAd = findViewById(R.id.favouriteAd);
+        viewMore = findViewById(R.id.viewMoreAds);
         description = findViewById(R.id.description);
         views = findViewById(R.id.views);
         call = findViewById(R.id.call);
         sms = findViewById(R.id.sms);
-
+        whatsapp = findViewById(R.id.whatsapp);
+        location = findViewById(R.id.location);
 
         mViewPager = (ViewPager) findViewById(R.id.viewPager);
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        db = FirebaseFirestore.getInstance();
         Intent intent = getIntent();
         adId = intent.getStringExtra("adId");
         init(adId);
@@ -114,8 +109,8 @@ public class AdPage extends AppCompatActivity {
         viewMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i=new Intent(AdPage.this,MoreAdsByUser.class);
-                i.putExtra("adsBy",adBy);
+                Intent i = new Intent(AdPage.this, MoreAdsByUser.class);
+                i.putExtra("adsBy", adBy);
                 startActivity(i);
             }
         });
@@ -124,7 +119,7 @@ public class AdPage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String username = SharedPrefs.getUsername();
-                mDatabase.child("users").child(username).child("likedAds").child(""+adId).setValue(adId).addOnSuccessListener(new OnSuccessListener<Void>() {
+                mDatabase.child("users").child(username).child("likedAds").child("" + adId).setValue(adId).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         CommonUtils.showToast("Marked as favourite");
@@ -138,23 +133,6 @@ public class AdPage extends AppCompatActivity {
             }
         });
 
-
-
-
-
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-        List<Address> addresses = null;
-        try {
-            addresses = geocoder.getFromLocation(31.488126, 74.265703, 1);
-            String addresss = addresses.get(0).getAddressLine(0);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-//        CommonUtils.showToast(address);
-//        username.setText(addresss);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,10 +165,10 @@ public class AdPage extends AppCompatActivity {
                         date1.setText(getFormattedDate(AdPage.this, adDetails.getTime()));
                         category.setText(adDetails.getMainCategory());
 
-//                        city.setText("" + adDetails.getCity());
+                        location.setText(GetAdAddress.getAddress(AdPage.this,adDetails.getLattitude(),adDetails.getLongitude()));
                         description.setText("" + adDetails.getDescription());
                         username.setText(adDetails.getUsername());
-                        adBy=adDetails.getUsername();
+                        adBy = adDetails.getUsername();
 
 
                         for (DataSnapshot childSnapshot : dataSnapshot.child("pictures").getChildren()) {
@@ -198,6 +176,7 @@ public class AdPage extends AppCompatActivity {
                             picUrls.add(model);
                             adapter.notifyDataSetChanged();
                         }
+
 
 
                         viewCount = adDetails.getViews();
@@ -229,6 +208,22 @@ public class AdPage extends AppCompatActivity {
             public void onClick(View view) {
                 Intent i = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + phoneNumber));
                 startActivity(i);
+            }
+        });
+        whatsapp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (phoneNumber.substring(0, 2).equals("03")) {
+                    phoneNumber = "+92" + phoneNumber.substring(1);
+                    String url = "https://api.whatsapp.com/send?phone=" + phoneNumber;
+                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    startActivity(i);
+                } else {
+                    String url = "https://api.whatsapp.com/send?phone=" + phoneNumber;
+                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    startActivity(i);
+                }
+
             }
         });
 
