@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 
 import com.appsinventiv.classifiedads.Activities.AdPage;
+import com.appsinventiv.classifiedads.Activities.NoResultsFound;
 import com.appsinventiv.classifiedads.Model.AdDetails;
 import com.appsinventiv.classifiedads.Model.PicturesModel;
 import com.appsinventiv.classifiedads.R;
@@ -41,59 +42,92 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     ArrayList<AdDetails> itemList;
     LayoutInflater layoutInflater;
     DatabaseReference mDatabase;
+    public static final int GOOGLE_AD_LAYOUT = 1;
+    public static final int AD_LAYOUT = 0;
+
 
     public ItemAdapter(Context context, ArrayList<AdDetails> itemList) {
-        mDatabase= FirebaseDatabase.getInstance().getReference();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         this.layoutInflater = LayoutInflater.from(context);
         this.context = context;
         this.itemList = itemList;
+
+
     }
 
     @Override
     public ItemAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = layoutInflater.inflate(R.layout.item_layout, parent, false);
-        ItemAdapter.ViewHolder viewHolder = new ItemAdapter.ViewHolder(view);
-        return viewHolder;
+        if (viewType == GOOGLE_AD_LAYOUT) {
+            View view = layoutInflater.inflate(R.layout.ad_in_list_layout, parent, false);
+            ItemAdapter.ViewHolder viewHolder = new ItemAdapter.ViewHolder(view);
+            return viewHolder;
+        } else {
+            View view = layoutInflater.inflate(R.layout.item_layout, parent, false);
+            ItemAdapter.ViewHolder viewHolder = new ItemAdapter.ViewHolder(view);
+            return viewHolder;
+        }
     }
 
     @Override
     public void onBindViewHolder(final ItemAdapter.ViewHolder holder, int position) {
-        final AdDetails model = itemList.get(position);
-        DecimalFormat formatter = new DecimalFormat("#,###,###");
-        String formatedPrice = formatter.format(model.getPrice());
-        holder.title.setText(model.getTitle());
-        holder.location.setText(GetAdAddress.getAddress(context,model.getLattitude(),model.getLongitude()));
 
-        holder.price.setText("Rs " + formatedPrice);
-        holder.time.setText(getFormattedDate(context, model.getTime()));
-        mDatabase.child("ads").child(""+model.getTime()).child("pictures").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot childSnapshot:dataSnapshot.getChildren()){
-                    PicturesModel model1=childSnapshot.getValue(PicturesModel.class);
-                    if(model1.getPosition()==0){
-                        Glide.with(context).load(model1.getImageUrl()).into(holder.thumbnail);
-                    }else {
+
+        int viewType = getItemViewType(position);
+        switch (viewType) {
+            case AD_LAYOUT:
+                final AdDetails model = itemList.get(position);
+                DecimalFormat formatter = new DecimalFormat("#,###,###");
+                String formattedPrice = formatter.format(model.getPrice());
+                holder.title.setText(model.getTitle());
+                holder.location.setText(GetAdAddress.getAddress(context, model.getLattitude(), model.getLongitude()));
+
+                holder.price.setText("Rs " + formattedPrice);
+                holder.time.setText(getFormattedDate(context, model.getTime()));
+                mDatabase.child("ads").child("" + model.getTime()).child("pictures").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                            PicturesModel model1 = childSnapshot.getValue(PicturesModel.class);
+                            if (model1.getPosition() == 0) {
+                                Glide.with(context).load(model1.getImageUrl()).into(holder.thumbnail);
+                            } else {
+                            }
+
+                        }
                     }
 
-                }
-            }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+                    }
+                });
 
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i=new Intent(context,AdPage.class);
-                i.putExtra("adId",""+model.getTime());
-                context.startActivity(i);
-            }
-        });
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent i = new Intent(context, AdPage.class);
+                        i.putExtra("adId", "" + model.getTime());
+                        context.startActivity(i);
+                    }
+                });
+
+                break;
+            case GOOGLE_AD_LAYOUT:
+                break;
+            default:
+
+        }
+
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position > 0 && position % 10 == 0)
+            return GOOGLE_AD_LAYOUT;
+        return AD_LAYOUT;
+
+//        return super.getItemViewType(position);
     }
 
     public String getFormattedDate(Context context, long smsTimeInMilis) {
@@ -118,11 +152,12 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
+
         return itemList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView title, price, time,location;
+        public TextView title, price, time, location;
         public ImageView thumbnail;
 
         public ViewHolder(View itemView) {

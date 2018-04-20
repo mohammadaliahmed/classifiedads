@@ -56,7 +56,7 @@ public class MoreAdsByUser extends AppCompatActivity {
                 if(dataSnapshot!=null){
                     AdDetails model=dataSnapshot.getValue(AdDetails.class);
                     if(model!=null){
-                        if(model.getUsername().equals(adsByUser)){
+                        if(model.getUsername().equalsIgnoreCase(adsByUser)){
                             arrayList.add(model);
                             adapter.notifyDataSetChanged();
                         }

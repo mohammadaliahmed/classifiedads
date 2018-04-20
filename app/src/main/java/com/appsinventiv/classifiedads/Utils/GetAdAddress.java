@@ -43,5 +43,17 @@ public class GetAdAddress {
         }
         return address;
     }
+    public static String getFullAddress(Context context, Double lat, Double lon){
+        String address="";
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+        List<Address> addresses = null;
+        try {
+            addresses = geocoder.getFromLocation(lat, lon, 1);
+            address = addresses.get(0).getAddressLine(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return address;
+    }
 
 }

@@ -28,7 +28,7 @@
         <activity
             android:name=".Activities.SubmitAd"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"/>
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".Activities.SuccessPage"
             android:screenOrientation="portrait" />
@@ -39,12 +39,11 @@
         <activity
             android:name=".Activities.Register"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Activities.Login"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Activities.Splash"
             android:theme="@style/AppTheme.NoActionBar">
@@ -96,7 +95,16 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".Activities.GPSTrackerActivity"></activity>
+        <activity
+            android:name=".Activities.GPSTrackerActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activities.NoResultsFound"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activities.EditProfileInfo"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"></activity>
     </application>
 
 </manifest>

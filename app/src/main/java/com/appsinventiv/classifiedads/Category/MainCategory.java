@@ -29,7 +29,7 @@ public class MainCategory extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_category);
-        MainCategory.this.setTitle("Choose category ");
+        MainCategory.this.setTitle("Choose mobile brand ");
 
         fa = this;
         String category = "main";

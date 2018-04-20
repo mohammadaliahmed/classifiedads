@@ -42,6 +42,7 @@ public class Register extends AppCompatActivity {
     EditText e_fullname, e_username, e_email, e_password, e_phone, e_city;
     String fullname, username, email, password, phone, city;
     Double latitude, longitude;
+    int p;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +122,9 @@ public class Register extends AppCompatActivity {
 //                    e_city.setError("Cannot be null");
 //                }
                 else {
-                    getPermissions();
+                    if(p==1){
+
+                    }
 
 
                 }
@@ -156,13 +159,13 @@ public class Register extends AppCompatActivity {
         if (userslist.contains("" + username)) {
             CommonUtils.showToast("Username is already taken\nPlease choose another");
         } else {
-
+            long time=System.currentTimeMillis();
             int randomPIN = (int) (Math.random() * 900000) + 100000;
             username = username.trim();
             username = username.toLowerCase();
             mDatabase
                     .child(username)
-                    .setValue(new User(fullname, username, email, password, "" + phone, city, "no", "" + randomPIN, "no", SharedPrefs.getFcmKey(), latitude, longitude))
+                    .setValue(new User(fullname, username, email, password, "" + phone, city, "no", "" + randomPIN, "no", SharedPrefs.getFcmKey(), latitude, longitude,time))
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
@@ -193,9 +196,8 @@ public class Register extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
        Log.d("permissions",""+permissions[0]);
-        if (permissions[0].equals("android.permission.ACCESS_FINE_LOCATION") && grantResults[0] == 0) {
-            Intent intent = new Intent(Register.this, GPSTrackerActivity.class);
-            startActivityForResult(intent, 1);
+        if (permissions[0].equalsIgnoreCase("android.permission.ACCESS_FINE_LOCATION") && grantResults[0] == 0) {
+            p=1;
         }else{
             boolean isgranted = true;
 
@@ -221,8 +223,7 @@ public class Register extends AppCompatActivity {
                 if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
                     return false;
                 }else{
-                    Intent intent = new Intent(Register.this, GPSTrackerActivity.class);
-                    startActivityForResult(intent, 1);
+                    p=1;
                 }
             }
         }

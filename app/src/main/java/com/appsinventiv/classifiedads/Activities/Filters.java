@@ -30,7 +30,7 @@ public class Filters extends AppCompatActivity {
     @Override
     protected void onPostResume() {
         if (mainCategory == null) {
-            chooseCategory.setText("Choose category");
+            chooseCategory.setText("Choose mobile brand");
         } else {
             if (childCategory != null) {
 //                if (subChild != null) {

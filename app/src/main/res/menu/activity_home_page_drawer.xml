@@ -5,25 +5,42 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home"
+            android:title="Home" />
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="My Ads" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:id="@+id/nav_browse_ads"
+            android:icon="@drawable/ic_browse"
             android:title="Browse Ads" />
+
+
         <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:id="@+id/nav_submit"
+            android:icon="@drawable/ic_submit_ad"
+            android:title="Submit a Free Ad" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="User">
         <menu>
+            <item
+                android:id="@+id/nav_my_ads"
+                android:icon="@drawable/ic_my_ads"
+                android:title="My Ads" />
+            <item
+                android:id="@+id/nav_favourites"
+                android:icon="@drawable/ic_menu_gallery"
+                android:visible="false"
+                android:title="My Favourites" />
+            <item
+                android:id="@+id/nav_account"
+                android:icon="@drawable/ic_my_account"
+                android:title="My Account" />
+
+        </menu>
+    </item>
+    <item android:title="App">
+        <menu>
+
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"

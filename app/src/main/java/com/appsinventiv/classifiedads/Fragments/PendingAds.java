@@ -70,7 +70,7 @@ public class PendingAds extends Fragment {
                 if (dataSnapshot != null) {
                     AdDetails adDetails = dataSnapshot.getValue(AdDetails.class);
                     if (adDetails != null) {
-                        if(adDetails.getAdStatus().equals("Pending")) {
+                        if(adDetails.getAdStatus().equalsIgnoreCase("Pending")) {
                             adDetailsArrayList.add(adDetails);
                             Collections.sort(adDetailsArrayList, new Comparator<AdDetails>() {
                                 @Override

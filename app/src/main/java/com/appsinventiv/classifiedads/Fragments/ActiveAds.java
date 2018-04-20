@@ -82,7 +82,7 @@ public class ActiveAds extends Fragment {
                 if (dataSnapshot != null) {
                     AdDetails adDetails = dataSnapshot.getValue(AdDetails.class);
                     if (adDetails != null) {
-                        if(adDetails.getAdStatus().equals("Active")|| adDetails.getAdStatus().equals("Inactive")) {
+                        if(adDetails.getAdStatus().equalsIgnoreCase("Active")|| adDetails.getAdStatus().equalsIgnoreCase("Inactive")) {
                             adDetailsArrayList.add(adDetails);
                             Collections.sort(adDetailsArrayList, new Comparator<AdDetails>() {
                                 @Override

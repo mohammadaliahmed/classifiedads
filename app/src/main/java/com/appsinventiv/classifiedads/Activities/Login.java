@@ -16,6 +16,7 @@ import com.appsinventiv.classifiedads.Classes.PrefManager;
 import com.appsinventiv.classifiedads.Model.User;
 import com.appsinventiv.classifiedads.R;
 import com.appsinventiv.classifiedads.Utils.CommonUtils;
+import com.appsinventiv.classifiedads.Utils.Constants;
 import com.appsinventiv.classifiedads.Utils.SharedPrefs;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -34,6 +35,7 @@ public class Login extends AppCompatActivity {
     ArrayList<String> userlist = new ArrayList<String>();
     String username, password;
     Button login, register;
+    String takeUserToActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,8 @@ public class Login extends AppCompatActivity {
         login = (Button) findViewById(R.id.login);
         e_username = (EditText) findViewById(R.id.username);
         e_password = (EditText) findViewById(R.id.password);
+        Intent i=getIntent();
+        takeUserToActivity=i.getStringExtra("takeUserToActivity");
 
 
         mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
@@ -139,7 +143,18 @@ public class Login extends AppCompatActivity {
 
     private void launchHomeScreen() {
         prefManager.setFirstTimeLaunch(false);
-        startActivity(new Intent(Login.this, HomePage.class));
+        if(takeUserToActivity.equalsIgnoreCase(Constants.HOME_ACTIVITY)){
+            startActivity(new Intent(Login.this, HomePage.class));
+
+        }else if(takeUserToActivity.equalsIgnoreCase(Constants.SUBMIT_ACTIVITY)){
+            startActivity(new Intent(Login.this, SubmitAd.class));
+        }
+        else if(takeUserToActivity.equalsIgnoreCase(Constants.MY_ACCOUNT_ACTIVITY)){
+            startActivity(new Intent(Login.this, EditProfileInfo.class));
+        }else if(takeUserToActivity.equalsIgnoreCase(Constants.MY_ADS_ACTIVITY)){
+            startActivity(new Intent(Login.this, MyAds.class));
+        }
         finish();
+
     }
 }

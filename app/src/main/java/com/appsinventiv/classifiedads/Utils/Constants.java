@@ -10,4 +10,12 @@ public class Constants {
     public static int FIREBASE_LIMIT=100;
     public static int HORIZONTAL_LIST_HOME_LIMIT=10;
 
+
+    public static String HOME_ACTIVITY="homePage";
+
+    public static String SUBMIT_ACTIVITY="submitAd";
+    public static String MY_ADS_ACTIVITY="myAds";
+    public static String MY_ACCOUNT_ACTIVITY="myAccount";
+    public static String MY_FAVOURITES_ACTIVITY="favourites";
+
 }

@@ -28,7 +28,7 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_centerInParent="true"
-                android:src="@drawable/phoneico" />
+                 />
 
             <TextView
                 android:id="@+id/category_title"

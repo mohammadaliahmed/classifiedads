@@ -114,16 +114,16 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadData() {
 
-        mDatabase.child("ads").limitToLast(100).addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if (dataSnapshot != null) {
-                    AdDetails model = dataSnapshot.getValue(AdDetails.class);
-                    pgsBar.setVisibility(View.GONE);
-                    if (model != null) {
-                        if (model.getCity().equals(SharedPrefs.getUserCity())) {
-                            if (model.getAdStatus().equals("Active")) {
-                                if (category == null || category.equals("") || category.equals("All Ads")) {
+        if (category == null || category.equalsIgnoreCase("") || category.equalsIgnoreCase("All Ads")) {
+            mDatabase.child("ads").limitToLast(200).addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    if (dataSnapshot != null) {
+                        AdDetails model = dataSnapshot.getValue(AdDetails.class);
+                        pgsBar.setVisibility(View.GONE);
+                        if (model != null) {
+                            if (model.getAdStatus().equalsIgnoreCase("Active")) {
+                                if (category == null || category.equalsIgnoreCase("") || category.equalsIgnoreCase("All Ads")) {
                                     itemList.add(model);
                                     Collections.sort(itemList, new Comparator<AdDetails>() {
                                         @Override
@@ -138,52 +138,82 @@ public class MainActivity extends AppCompatActivity {
 
 
                                     adapter.notifyDataSetChanged();
-                                } else if (category != null || !category.equals("")) {
-                                    if (model.getMainCategory().equals(category)) {
-
-                                        itemList.add(model);
-                                        Collections.sort(itemList, new Comparator<AdDetails>() {
-                                            @Override
-                                            public int compare(AdDetails listData, AdDetails t1) {
-                                                Long ob1 = listData.getTime();
-                                                Long ob2 = t1.getTime();
-
-                                                return ob2.compareTo(ob1);
-
-                                            }
-                                        });
-                                        pgsBar.setVisibility(View.GONE);
-
-                                        adapter.notifyDataSetChanged();
-                                    }
                                 }
                             }
                         }
                     }
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
                 }
-            }
 
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
 
-            }
+                }
 
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
-            }
+                }
 
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
+                }
+            });
+        } else if (category != null || !category.equalsIgnoreCase(""))  {
+            mDatabase.child("ads").addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    AdDetails model = dataSnapshot.getValue(AdDetails.class);
+                    pgsBar.setVisibility(View.GONE);
+                    if (model != null) {
+                        if (model.getMainCategory().equalsIgnoreCase(category)) {
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                            itemList.add(model);
+                            Collections.sort(itemList, new Comparator<AdDetails>() {
+                                @Override
+                                public int compare(AdDetails listData, AdDetails t1) {
+                                    Long ob1 = listData.getTime();
+                                    Long ob2 = t1.getTime();
 
-            }
-        });
+                                    return ob2.compareTo(ob1);
+
+                                }
+                            });
+                            pgsBar.setVisibility(View.GONE);
+
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+        }
+
 
 
     }
@@ -212,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.add_ad) {
 
-            if (SharedPrefs.getIsLoggedIn().equals("yes")) {
+            if (SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")) {
                 Intent i = new Intent(MainActivity.this, SubmitAd.class);
                 startActivity(i);
             } else {

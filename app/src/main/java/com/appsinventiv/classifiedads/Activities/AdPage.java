@@ -213,7 +213,7 @@ public class AdPage extends AppCompatActivity {
         whatsapp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (phoneNumber.substring(0, 2).equals("03")) {
+                if (phoneNumber.substring(0, 2).equalsIgnoreCase("03")) {
                     phoneNumber = "+92" + phoneNumber.substring(1);
                     String url = "https://api.whatsapp.com/send?phone=" + phoneNumber;
                     Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));

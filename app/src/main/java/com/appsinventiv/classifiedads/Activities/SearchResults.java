@@ -16,6 +16,7 @@ import com.appsinventiv.classifiedads.Adapter.ItemAdapter;
 import com.appsinventiv.classifiedads.Adapter.SearchItemsAdapter;
 import com.appsinventiv.classifiedads.Model.AdDetails;
 import com.appsinventiv.classifiedads.R;
+import com.appsinventiv.classifiedads.Utils.CommonUtils;
 import com.appsinventiv.classifiedads.Utils.SharedPrefs;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -83,15 +84,16 @@ public class SearchResults extends AppCompatActivity {
                 if (dataSnapshot != null) {
                     AdDetails model = dataSnapshot.getValue(AdDetails.class);
                     if (model != null) {
-                        if (model.getAdStatus().equals("Active")) {
+                        if (model.getAdStatus().equalsIgnoreCase("Active")) {
 
                             searchTerm = searchTerm.toLowerCase();
                             location = location.toLowerCase();
-                            if (model.getCity().toLowerCase().equals(location)) {
+                            if (model.getCity().toLowerCase().equalsIgnoreCase(location)) {
                                 if (model.getPrice() > minPrice && model.getPrice() < maxPrice) {
                                     if (model.getTitle().toLowerCase().contains(searchTerm)) {
-                                        if (model.getMainCategory().equals(category)) {
+                                        if (model.getMainCategory().equalsIgnoreCase(category)) {
                                             itemList.add(model);
+
                                             Collections.sort(itemList, new Comparator<AdDetails>() {
                                                 @Override
                                                 public int compare(AdDetails listData, AdDetails t1) {
@@ -105,7 +107,7 @@ public class SearchResults extends AppCompatActivity {
                                             pgsBar.setVisibility(View.GONE);
 
                                             adapter.notifyDataSetChanged();
-                                        } else if (category == null || category.equals("All ads") || category.equals("")) {
+                                        } else if (category == null || category.equalsIgnoreCase("All ads") || category.equalsIgnoreCase("")) {
                                             itemList.add(model);
                                             Collections.sort(itemList, new Comparator<AdDetails>() {
                                                 @Override
@@ -165,7 +167,7 @@ public class SearchResults extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.add_ad) {
 
-            if(SharedPrefs.getIsLoggedIn().equals("yes")){
+            if(SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")){
                 Intent i = new Intent(SearchResults.this, SubmitAd.class);
                 startActivity(i);
             }else {

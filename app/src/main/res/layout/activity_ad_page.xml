@@ -348,6 +348,12 @@
                     android:src="@drawable/ad" />
 
             </android.support.v7.widget.CardView>
+            <TextView
+                android:layout_below="@+id/adcard"
+                android:layout_margin="15dp"
+                android:text="Safety Tips:\n>Never transfer money in advance.\n>Try to meet the seller at a public place.\n>Do not proceed if something seems wrong."
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
         </RelativeLayout>
 

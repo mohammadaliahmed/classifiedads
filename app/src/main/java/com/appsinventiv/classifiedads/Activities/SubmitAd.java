@@ -1,11 +1,13 @@
 package com.appsinventiv.classifiedads.Activities;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.appsinventiv.classifiedads.AdObserver;
@@ -78,7 +81,7 @@ public class SubmitAd extends AppCompatActivity implements AdObserver {
     DatabaseReference mDatabase;
 
     ArrayList<String> imageUrl;
-    Double longitude=60.3323097,latitude=30.0493247;
+    Double longitude = 60.3323097, latitude = 30.0493247;
 
     SharedPreferences userPref;
     String username, city, phonenumber;
@@ -97,11 +100,13 @@ public class SubmitAd extends AppCompatActivity implements AdObserver {
     public static String mainCategory, childCategory;
     public static Activity fa;
     String adminFcmKey;
+    int p1 = 0, p2 = 0;
+    CheckBox checkbox;
 
     @Override
     protected void onPostResume() {
         if (mainCategory == null) {
-            chooseCategoryText.setText("Choose category");
+            chooseCategoryText.setText("Choose mobile brand");
         } else {
             if (childCategory != null) {
 //                if (subChild != null) {
@@ -125,7 +130,7 @@ public class SubmitAd extends AppCompatActivity implements AdObserver {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-        adObserver=SubmitAd.this;
+        adObserver = SubmitAd.this;
 
         getPermissions();
 
@@ -159,6 +164,7 @@ public class SubmitAd extends AppCompatActivity implements AdObserver {
         usernameField = (EditText) findViewById(R.id.username);
         phoneField = (EditText) findViewById(R.id.phone);
         locationField = (EditText) findViewById(R.id.location);
+        checkbox = findViewById(R.id.check);
 
         chooseCategoryText = (TextView) findViewById(R.id.choose_category);
 
@@ -176,24 +182,31 @@ public class SubmitAd extends AppCompatActivity implements AdObserver {
         submitAd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(imageUrl.isEmpty()){
-                    CommonUtils.showToast("Please select atleast one image");
-                }
-                else if (mainCategory == null) {
-                    Toast.makeText(SubmitAd.this, "Please choose a category!", Toast.LENGTH_SHORT).show();
+                if (p1 == 1 && p2 == 1) {
+                    if (imageUrl.isEmpty()) {
+                        CommonUtils.showToast("Please select atleast one image");
+                    } else if (mainCategory == null) {
+                        Toast.makeText(SubmitAd.this, "Please choose a category!", Toast.LENGTH_SHORT).show();
 
-                } else if (title.getText().toString().length() == 0) {
-                    title.setError("Cannot be null");
+                    } else if (title.getText().toString().length() == 0) {
+                        title.setError("Cannot be null");
 
-                } else if (price.getText().toString().length() == 0) {
-                    price.setError("Cannot be null");
-                } else if (description.getText().toString().length() == 0) {
-                    description.setError("Cannot be null");
-                } else {
-                    Intent intent = new Intent(SubmitAd.this, GPSTrackerActivity.class);
-                    startActivityForResult(intent, 1);
-                }
+                    } else if (price.getText().toString().length() == 0) {
+                        price.setError("Cannot be null");
+                    } else if (description.getText().toString().length() == 0) {
+                        description.setError("Cannot be null");
+                    } else if (!checkbox.isChecked()) {
+                        checkbox.setError("");
+                        CommonUtils.showToast("Please accept the terms and conditions");
+
+                    } else {
+                        Intent intent = new Intent(SubmitAd.this, GPSTrackerActivity.class);
+                        startActivityForResult(intent, 1);
+                    }
 //                submitAd();
+                } else {
+                    getPermissions();
+                }
             }
         });
         time = System.currentTimeMillis();
@@ -227,34 +240,44 @@ public class SubmitAd extends AppCompatActivity implements AdObserver {
         pickPicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectedAdImages.clear();
-                Matisse.from(SubmitAd.this)
-                        .choose(MimeType.allOf())
-                        .countable(true)
-                        .maxSelectable(5)
-                        .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
-                        .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
-                        .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
-                        .thumbnailScale(0.85f)
-                        .imageEngine(new GlideEngine())
-                        .forResult(REQUEST_CODE_CHOOSE);
+                if (p1 == 1 && p2 == 1) {
+                    selectedAdImages.clear();
+                    initMatisse();
+
+                } else {
+                    getPermissions();
+                }
             }
         });
 
     }
 
+    private void initMatisse() {
+        Matisse.from(SubmitAd.this)
+                .choose(MimeType.allOf())
+                .countable(true)
+                .maxSelectable(5)
+                .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
+                .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
+                .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+                .thumbnailScale(0.85f)
+                .imageEngine(new GlideEngine())
+                .forResult(REQUEST_CODE_CHOOSE);
+    }
+
     private void getPermissions() {
         int PERMISSION_ALL = 1;
-        String[] PERMISSIONS = {android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        String[] PERMISSIONS = {
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                android.Manifest.permission.CAMERA,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                android.Manifest.permission.ACCESS_FINE_LOCATION,
+
         };
 
         if (!hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         }
+//        CommonUtils.showToast(PERMISSION_ALL+"");
     }
 
     private void showPickedPictures() {
@@ -279,16 +302,19 @@ public class SubmitAd extends AppCompatActivity implements AdObserver {
                     mSelected) {
                 selectedAdImages.add(new SelectedAdImages("" + img));
                 adapter.notifyDataSetChanged();
-                CompressImage compressImage=new CompressImage(SubmitAd.this);
+                CompressImage compressImage = new CompressImage(SubmitAd.this);
                 imageUrl.add(compressImage.compressImage("" + img));
             }
-        } if (requestCode == 1) {
-            Bundle extras = data.getExtras();
-             longitude  = extras.getDouble("Longitude");
-             latitude = extras.getDouble("Latitude");
+        }
+        if (requestCode == 1) {
+            if (data != null) {
+                Bundle extras = data.getExtras();
+                longitude = extras.getDouble("Longitude");
+                latitude = extras.getDouble("Latitude");
 //            Toast.makeText(fa, longitude+"   "+latitude, Toast.LENGTH_SHORT).show();
 
-            submitAd();
+                submitAd();
+            }
 
         }
 
@@ -297,53 +323,50 @@ public class SubmitAd extends AppCompatActivity implements AdObserver {
     }
 
 
-
     void submitAd() {
 
 
+        String Adtitle = title.getText().toString(),
+                AdDescription = description.getText().toString();
+        long AdPrice = Long.parseLong(price.getText().toString());
 
-            String Adtitle = title.getText().toString(),
-                    AdDescription = description.getText().toString();
-            long AdPrice = Long.parseLong(price.getText().toString());
-
-            String username = SharedPrefs.getUsername();
-            mDatabase.child("users").child(username).child("adsPosted").child("" + time).setValue("" + time);
+        String username = SharedPrefs.getUsername();
+        mDatabase.child("users").child(username).child("adsPosted").child("" + time).setValue("" + time);
 
 
-            mDatabase.child("ads").child("" + time).setValue(new AdDetails(Adtitle, AdDescription, username, "" + phonenumber, city, ""
-                    , "Active", mainCategory, childCategory,
-                    time, AdPrice, 0,latitude,longitude)).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(SubmitAd.this, "Error" + e, Toast.LENGTH_SHORT).show();
-                }
-            });
-
-            int count = 0;
-            for (String img : imageUrl) {
-
-                putPictures(img, "" + time, count);
-                count++;
-                adObserver.onUploaded(count,imageUrl.size());
+        mDatabase.child("ads").child("" + time).setValue(new AdDetails(Adtitle, AdDescription, username, "" + phonenumber, city, ""
+                , "Active", mainCategory, childCategory,
+                time, AdPrice, 0, latitude, longitude)).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
 
             }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(SubmitAd.this, "Error" + e, Toast.LENGTH_SHORT).show();
+            }
+        });
 
-            NotificationAsync notificationAsync = new NotificationAsync(SubmitAd.this);
-            String NotificationTitle = "New Ad by " + username + " from " + city;
-            String NotificationMessage = "Title: " + Adtitle + "   Price: " + AdPrice;
-            notificationAsync.execute("ali", adminFcmKey, NotificationTitle, NotificationMessage);
+        int count = 0;
+        for (String img : imageUrl) {
+
+            putPictures(img, "" + time, count);
+            count++;
+            adObserver.onUploaded(count, imageUrl.size());
+
+        }
+
+        NotificationAsync notificationAsync = new NotificationAsync(SubmitAd.this);
+        String NotificationTitle = "New Ad by " + username + " from " + city;
+        String NotificationMessage = "Title: " + Adtitle + "   Price: " + AdPrice;
+        notificationAsync.execute("ali", adminFcmKey, NotificationTitle, NotificationMessage);
 
 
-            mainCategory = null;
+        mainCategory = null;
 //        subChild = null;
-            childCategory = null;
+        childCategory = null;
 //        finish();
-
 
 
     }
@@ -385,7 +408,6 @@ public class SubmitAd extends AppCompatActivity implements AdObserver {
     }
 
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -395,25 +417,72 @@ public class SubmitAd extends AppCompatActivity implements AdObserver {
     }
 
     @Override
-    public void onUploaded(int count,int arraySize) {
+    public void onUploaded(int count, int arraySize) {
 //        CommonUtils.showToast(count+"     "+arraySize);
-        if(count==arraySize){
-            Intent i=new Intent(SubmitAd.this,SuccessPage.class);
+        if (count == arraySize) {
+            Intent i = new Intent(SubmitAd.this, SuccessPage.class);
             startActivity(i);
             finish();
         }
 
 
     }
-    public static boolean hasPermissions(Context context, String... permissions) {
+
+    public boolean hasPermissions(Context context, String... permissions) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
             for (String permission : permissions) {
                 if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
                     return false;
+                } else {
+                    p1 = 1;
+                    p2 = 1;
                 }
             }
         }
         return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.d("permissions", "" + permissions[0]);
+        for (int a = 0; a < permissions.length; a++) {
+        }
+        if (permissions[0].equalsIgnoreCase("android.permission.ACCESS_FINE_LOCATION") && grantResults[0] == 0) {
+//
+            p1 = 1;
+
+        } else {
+
+            takeToSettings(permissions, 0);
+
+        }
+        if (permissions[1].equalsIgnoreCase("android.permission.WRITE_EXTERNAL_STORAGE") && grantResults[1] == 0) {
+            p2 = 1;
+
+        } else {
+
+            takeToSettings(permissions, 1);
+        }
+
+    }
+
+    private void takeToSettings(String[] permissions, int a) {
+        boolean isgranted = true;
+
+//            getPermissions();
+        boolean showRationale = false;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            showRationale = shouldShowRequestPermissionRationale(permissions[a]);
+        }
+        if (!showRationale) {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            Uri uri = Uri.fromParts("package", getPackageName(), null);
+            intent.setData(uri);
+            startActivityForResult(intent, 1);
+            isgranted = false;
+        }
+//        CommonUtils.showToast("This app needs to access Gallery");
     }
 }
 

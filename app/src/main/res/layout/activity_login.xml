@@ -20,7 +20,10 @@
         <android.support.design.widget.TextInputEditText
             android:layout_width="match_parent"
             android:id="@+id/username"
+            android:digits="abcdefghijklmnopqrstuvwxyz"
+            android:inputType="text|textNoSuggestions"
             android:maxLines="1"
+            android:lines="1"
             android:layout_height="wrap_content"
             android:hint="Username" />
     </android.support.design.widget.TextInputLayout>

@@ -65,9 +65,9 @@ public class AdStatusAdapter extends RecyclerView.Adapter<AdStatusAdapter.ViewHo
         holder.price.setText("Rs " + formatedPrice);
         holder.time.setText(CommonUtils.getFormattedDate( model.getTime()));
 
-        if(model.getAdStatus().equals("Active")){
+        if(model.getAdStatus().equalsIgnoreCase("Active")){
             holder.aSwitch.setChecked(true);
-        }else if(model.getAdStatus().equals("Inactive")){
+        }else if(model.getAdStatus().equalsIgnoreCase("Inactive")){
             holder.aSwitch.setChecked(false);
         }else{
 //            holder.itemView.setVisibility(View.GONE);

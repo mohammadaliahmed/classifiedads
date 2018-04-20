@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.appsinventiv.classifiedads.Adapter.HomeCategoryAdapter;
 import com.appsinventiv.classifiedads.Adapter.HomepageAppleAdapter;
@@ -31,6 +32,7 @@ import com.appsinventiv.classifiedads.Classes.CategoryClass;
 import com.appsinventiv.classifiedads.Model.AdDetails;
 import com.appsinventiv.classifiedads.R;
 import com.appsinventiv.classifiedads.Utils.CommonUtils;
+import com.appsinventiv.classifiedads.Utils.Constants;
 import com.appsinventiv.classifiedads.Utils.SharedPrefs;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -88,12 +90,10 @@ public class HomePage extends AppCompatActivity
         submitAd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(SharedPrefs.getIsLoggedIn().equals("yes")){
-                    Intent i = new Intent(HomePage.this, SubmitAd.class);
-                    startActivity(i);
+                if(SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")){
+                    gotoSubmitAdActivity();
                 }else {
-                    Intent i = new Intent(HomePage.this, Login.class);
-                    startActivity(i);
+                    gotoLoginActivity(Constants.SUBMIT_ACTIVITY);
                 }
 
 
@@ -119,7 +119,7 @@ public class HomePage extends AppCompatActivity
         });
 
 
-        if(SharedPrefs.getIsLoggedIn().equals("yes")){
+        if(SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")){
             mDatabase.child("users").child(SharedPrefs.getUsername()).child("fcmKey").setValue(SharedPrefs.getFcmKey());
         }
 
@@ -137,6 +137,37 @@ public class HomePage extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View headerView = navigationView.getHeaderView(0);
+        TextView navUsername = (TextView) headerView.findViewById(R.id.name_drawer);
+        TextView navSubtitle = (TextView) headerView.findViewById(R.id.phone_drawer);
+        if(SharedPrefs.getUsername().equalsIgnoreCase("")){
+            navSubtitle.setText("Welcome to Mobile Mart");
+
+            navUsername.setText("Login or Signup");
+            navUsername.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    gotoLoginActivity(Constants.HOME_ACTIVITY);
+                }
+            });
+        }else {
+            navSubtitle.setText(SharedPrefs.getUserCity());
+
+            navUsername.setText(SharedPrefs.getUsername());
+        }
+    }
+
+    private void gotoSubmitAdActivity() {
+        Intent i = new Intent(HomePage.this, SubmitAd.class);
+        startActivity(i);
+    }
+
+    private void gotoLoginActivity(String activityName) {
+        Intent i = new Intent(HomePage.this, Login.class);
+        i.putExtra("takeUserToActivity",activityName);
+        startActivity(i);
     }
 
     private void getSplashImage() {
@@ -215,9 +246,9 @@ public class HomePage extends AppCompatActivity
                 if (dataSnapshot != null) {
                     AdDetails adDetails = dataSnapshot.getValue(AdDetails.class);
                     if (adDetails != null) {
-                        if (adDetails.getAdStatus().equals("Active")) {
+                        if (adDetails.getAdStatus().equalsIgnoreCase("Active")) {
 
-                            if (adDetails.getMainCategory().equals("Samsung")) {
+                            if (adDetails.getMainCategory().equalsIgnoreCase("Samsung")) {
 
                                 samsungAds.add(adDetails);
 
@@ -280,9 +311,9 @@ public class HomePage extends AppCompatActivity
                 if (dataSnapshot != null) {
                     AdDetails adDetails = dataSnapshot.getValue(AdDetails.class);
                     if (adDetails != null) {
-                        if (adDetails.getAdStatus().equals("Active")) {
+                        if (adDetails.getAdStatus().equalsIgnoreCase("Active")) {
 
-                            if (adDetails.getMainCategory().equals("Apple")) {
+                            if (adDetails.getMainCategory().equalsIgnoreCase("Apple")) {
                                 appleAds.add(adDetails);
 
                                 Collections.sort(appleAds, new Comparator<AdDetails>() {
@@ -410,30 +441,40 @@ public class HomePage extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_browse_ads) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-            if(SharedPrefs.getIsLoggedIn().equals("yes")){
-                Intent i = new Intent(HomePage.this, MyAds.class);
-                startActivity(i);
-            }else {
-                Intent i = new Intent(HomePage.this, Login.class);
-                startActivity(i);
-            }
-
-        } else if (id == R.id.nav_slideshow) {
             Intent i =new Intent(HomePage.this,MainActivity.class);
             i.putExtra("category","All Ads");
 
             startActivity(i);
+        } else if (id == R.id.nav_submit) {
+            if(SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")){
+                gotoSubmitAdActivity();
+            }else {
+                gotoLoginActivity(Constants.SUBMIT_ACTIVITY);
+            }
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_my_ads) {
+            if(SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")){
+                Intent i=new Intent(HomePage.this,MyAds.class);
+                startActivity(i);
+            }else {
+                gotoLoginActivity(Constants.MY_ADS_ACTIVITY);
+            }
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.nav_account) {
+            if(SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")){
+                Intent i=new Intent(HomePage.this,EditProfileInfo.class);
+                startActivity(i);
+            }else {
+                gotoLoginActivity(Constants.MY_ACCOUNT_ACTIVITY);
+            }
         }
+//        else if (id == R.id.nav_share) {
+//
+//        } else if (id == R.id.nav_send) {
+//
+//        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
