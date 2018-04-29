@@ -17,11 +17,11 @@ public class SuccessPage extends AppCompatActivity {
         SuccessPage.this.setTitle("Success");
         backtohome=(Button)findViewById(R.id.back);
         postnew=(Button)findViewById(R.id.postnew);
-        postnew=(Button)findViewById(R.id.viewmyads);
+        myAds=(Button)findViewById(R.id.viewmyads);
 
 
 
-        postnew.setOnClickListener(new View.OnClickListener() {
+        myAds.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 

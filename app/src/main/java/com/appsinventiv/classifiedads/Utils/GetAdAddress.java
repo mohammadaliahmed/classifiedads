@@ -19,20 +19,25 @@ public class GetAdAddress {
     private GetAdAddress() {
     }
 
-    public static String getAddress(Context context, Double lat, Double lon){
-        String address="";
+    public static String getAddress(Context context, Double lat, Double lon) {
+        String address = "";
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         List<Address> addresses = null;
         try {
             addresses = geocoder.getFromLocation(lat, lon, 1);
-            address = addresses.get(0).getSubLocality()+", "+addresses.get(0).getLocality();
+            address = addresses.get(0).getSubLocality() + ", " + addresses.get(0).getLocality();
         } catch (IOException e) {
             e.printStackTrace();
         }
         return address;
     }
-    public static String getCity(Context context, Double lat, Double lon){
-        String address="";
+
+    public static String getCity(Context context, Double lat, Double lon) {
+        if (lat == null || lon == null) {
+            lon = 60.3323097;
+            lat = 30.0493247;
+        }
+        String address = "";
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         List<Address> addresses = null;
         try {
@@ -43,8 +48,9 @@ public class GetAdAddress {
         }
         return address;
     }
-    public static String getFullAddress(Context context, Double lat, Double lon){
-        String address="";
+
+    public static String getFullAddress(Context context, Double lat, Double lon) {
+        String address = "";
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         List<Address> addresses = null;
         try {

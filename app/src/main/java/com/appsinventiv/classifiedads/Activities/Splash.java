@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.widget.ImageView;
 
 import com.appsinventiv.classifiedads.R;
+import com.appsinventiv.classifiedads.Utils.CommonUtils;
 import com.appsinventiv.classifiedads.Utils.SharedPrefs;
 import com.bumptech.glide.Glide;
 
@@ -19,7 +20,16 @@ public class Splash extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         splashImage=findViewById(R.id.splashImage);
 
-        Glide.with(this).load(SharedPrefs.getSplashImage()).into(splashImage);
+
+//        if(SharedPrefs.getSplashImage()==null||SharedPrefs.getSplashImage().equals("")){
+//            CommonUtils.showToast("here");
+//            Glide.with(this).load(R.drawable.main_logo).into(splashImage);
+//
+//        }else {
+//            CommonUtils.showToast("here2");
+//
+//            Glide.with(this).load(SharedPrefs.getSplashImage()).into(splashImage);
+//        }
 
         new Handler().postDelayed(new Runnable() {
 

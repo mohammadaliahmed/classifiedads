@@ -58,14 +58,12 @@ public class SearchResults extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         adapter = new ItemAdapter(SearchResults.this, itemList);
         recyclerView.setAdapter(adapter);
-//        Intent intent = getIntent();
         Bundle intent = getIntent().getExtras();
         searchTerm = intent.getString("searchTerm", "");
         maxPrice = intent.getLong("maxPrice", 9999999999L);
         minPrice = intent.getLong("minPrice", 0);
         location = intent.getString("location", "");
         category = intent.getString("category", "");
-//        Toast.makeText(this, ""+category, Toast.LENGTH_SHORT).show();
 
 
         mDatabase = FirebaseDatabase.getInstance().getReference().child("ads");
@@ -107,7 +105,7 @@ public class SearchResults extends AppCompatActivity {
                                             pgsBar.setVisibility(View.GONE);
 
                                             adapter.notifyDataSetChanged();
-                                        } else if (category == null || category.equalsIgnoreCase("All ads") || category.equalsIgnoreCase("")) {
+                                        } else if (category == null || category.equalsIgnoreCase("All Brands") || category.equalsIgnoreCase("")) {
                                             itemList.add(model);
                                             Collections.sort(itemList, new Comparator<AdDetails>() {
                                                 @Override

@@ -53,7 +53,7 @@ public class MainCategory extends AppCompatActivity {
         CategoryItem categoryItem;
 
         if (intentFromFilters != null) {
-            categoryItem = new CategoryItem("All ads", R.drawable.all_ads_category);
+            categoryItem = new CategoryItem("All brands", R.drawable.all_ads_category);
             itemList.add(categoryItem);
 
             categoryItem = new CategoryItem("Samsung", R.drawable.samsung_category);

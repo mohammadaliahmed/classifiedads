@@ -78,8 +78,6 @@ public class MainActivity extends AppCompatActivity {
         int PERMISSION_ALL = 1;
         String[] PERMISSIONS = {android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                android.Manifest.permission.CAMERA,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION,
                 android.Manifest.permission.ACCESS_FINE_LOCATION,
         };
 
@@ -93,6 +91,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         adapter = new ItemAdapter(this, itemList);
         recyclerView.setAdapter(adapter);
+        recyclerView.invalidate();
+        recyclerView.setNestedScrollingEnabled(false);
+
 
         pgsBar.setVisibility(View.VISIBLE);
 
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadData() {
 
-        if (category == null || category.equalsIgnoreCase("") || category.equalsIgnoreCase("All Ads")) {
+        if (category == null || category.equalsIgnoreCase("") || category.equalsIgnoreCase("All Brands")) {
             mDatabase.child("ads").limitToLast(200).addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                         pgsBar.setVisibility(View.GONE);
                         if (model != null) {
                             if (model.getAdStatus().equalsIgnoreCase("Active")) {
-                                if (category == null || category.equalsIgnoreCase("") || category.equalsIgnoreCase("All Ads")) {
+                                if (category == null || category.equalsIgnoreCase("") || category.equalsIgnoreCase("All Brands")) {
                                     itemList.add(model);
                                     Collections.sort(itemList, new Comparator<AdDetails>() {
                                         @Override

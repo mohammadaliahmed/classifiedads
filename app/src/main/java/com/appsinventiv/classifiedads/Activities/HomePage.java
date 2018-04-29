@@ -34,6 +34,7 @@ import com.appsinventiv.classifiedads.R;
 import com.appsinventiv.classifiedads.Utils.CommonUtils;
 import com.appsinventiv.classifiedads.Utils.Constants;
 import com.appsinventiv.classifiedads.Utils.SharedPrefs;
+import com.bumptech.glide.Glide;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -61,6 +62,8 @@ public class HomePage extends AppCompatActivity
 
     Button moreAppleAds, moreSamsungAds;
     RelativeLayout submitAd;
+    String featuredAdUrl;
+    ImageView featuredAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +78,7 @@ public class HomePage extends AppCompatActivity
         bigAd = (ImageView) findViewById(R.id.bigad);
         pgsBar = (ProgressBar) findViewById(R.id.pBar);
         pgsBar1 = (ProgressBar) findViewById(R.id.pBar1);
+        featuredAd = findViewById(R.id.bigad);
 
         pgsBar.setVisibility(View.VISIBLE);
         pgsBar1.setVisibility(View.VISIBLE);
@@ -90,9 +94,9 @@ public class HomePage extends AppCompatActivity
         submitAd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")){
+                if (SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")) {
                     gotoSubmitAdActivity();
-                }else {
+                } else {
                     gotoLoginActivity(Constants.SUBMIT_ACTIVITY);
                 }
 
@@ -119,14 +123,19 @@ public class HomePage extends AppCompatActivity
         });
 
 
-        if(SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")){
+        if (SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")) {
             mDatabase.child("users").child(SharedPrefs.getUsername()).child("fcmKey").setValue(SharedPrefs.getFcmKey());
+        }
+
+        if (!SharedPrefs.getFeaturedAd().equalsIgnoreCase("")) {
+            Glide.with(HomePage.this).load(SharedPrefs.getFeaturedAd()).into(featuredAd);
         }
 
         initcategories();
         initSamsungAds();
         initAppleAds();
-        getSplashImage();
+//        getSplashImage();
+        getFeaturedAd();
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -142,7 +151,7 @@ public class HomePage extends AppCompatActivity
         View headerView = navigationView.getHeaderView(0);
         TextView navUsername = (TextView) headerView.findViewById(R.id.name_drawer);
         TextView navSubtitle = (TextView) headerView.findViewById(R.id.phone_drawer);
-        if(SharedPrefs.getUsername().equalsIgnoreCase("")){
+        if (SharedPrefs.getUsername().equalsIgnoreCase("")) {
             navSubtitle.setText("Welcome to Mobile Mart");
 
             navUsername.setText("Login or Signup");
@@ -152,7 +161,7 @@ public class HomePage extends AppCompatActivity
                     gotoLoginActivity(Constants.HOME_ACTIVITY);
                 }
             });
-        }else {
+        } else {
             navSubtitle.setText(SharedPrefs.getUserCity());
 
             navUsername.setText(SharedPrefs.getUsername());
@@ -166,7 +175,7 @@ public class HomePage extends AppCompatActivity
 
     private void gotoLoginActivity(String activityName) {
         Intent i = new Intent(HomePage.this, Login.class);
-        i.putExtra("takeUserToActivity",activityName);
+        i.putExtra("takeUserToActivity", activityName);
         startActivity(i);
     }
 
@@ -174,8 +183,24 @@ public class HomePage extends AppCompatActivity
         mDatabase.child("splashImage").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot!=null){
-                    SharedPrefs.setSplashImage(""+dataSnapshot.getValue());
+                if (dataSnapshot != null) {
+                    SharedPrefs.setSplashImage("" + dataSnapshot.getValue());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getFeaturedAd() {
+        mDatabase.child("featuredAd").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot != null) {
+                    SharedPrefs.setFeaturedAd("" + dataSnapshot.getValue());
                 }
             }
 
@@ -239,6 +264,8 @@ public class HomePage extends AppCompatActivity
         recyclerView.setLayoutManager(horizontalLayoutManagaer);
         samsungAdapter = new HomepageSamsungAdapter(this, samsungAds);
         recyclerView.setAdapter(samsungAdapter);
+        recyclerView.invalidate();
+        recyclerView.setNestedScrollingEnabled(false);
 
         mDatabase.child("ads").addChildEventListener(new ChildEventListener() {
             @Override
@@ -249,23 +276,26 @@ public class HomePage extends AppCompatActivity
                         if (adDetails.getAdStatus().equalsIgnoreCase("Active")) {
 
                             if (adDetails.getMainCategory().equalsIgnoreCase("Samsung")) {
+                                if (adDetails.getCity().equalsIgnoreCase(SharedPrefs.getUserCity())) {
 
-                                samsungAds.add(adDetails);
 
-                                Collections.sort(samsungAds, new Comparator<AdDetails>() {
-                                    @Override
-                                    public int compare(AdDetails listData, AdDetails t1) {
-                                        Long ob1 = listData.getViews();
-                                        Long ob2 = t1.getViews();
+                                    samsungAds.add(adDetails);
 
-                                        return ob2.compareTo(ob1);
+                                    Collections.sort(samsungAds, new Comparator<AdDetails>() {
+                                        @Override
+                                        public int compare(AdDetails listData, AdDetails t1) {
+                                            Long ob1 = listData.getViews();
+                                            Long ob2 = t1.getViews();
 
-                                    }
-                                });
-                                pgsBar.setVisibility(View.GONE);
+                                            return ob2.compareTo(ob1);
 
-                                samsungAdapter.notifyDataSetChanged();
+                                        }
+                                    });
+                                    pgsBar.setVisibility(View.GONE);
 
+                                    samsungAdapter.notifyDataSetChanged();
+
+                                }
                             }
                         }
                     }
@@ -299,40 +329,48 @@ public class HomePage extends AppCompatActivity
     public void initAppleAds() {
         appleAds = new ArrayList<AdDetails>();
 
-        RecyclerView recyclerViewCars = (RecyclerView) findViewById(R.id.ads_recyclerview_cars);
+        RecyclerView recyclerViewApple = (RecyclerView) findViewById(R.id.ads_recyclerview_apple);
         LinearLayoutManager horizontalLayoutManagaerCars
                 = new LinearLayoutManager(HomePage.this, LinearLayoutManager.HORIZONTAL, false);
-        recyclerViewCars.setLayoutManager(horizontalLayoutManagaerCars);
+        recyclerViewApple.setLayoutManager(horizontalLayoutManagaerCars);
         appleAdapter = new HomepageAppleAdapter(this, appleAds);
-        recyclerViewCars.setAdapter(appleAdapter);
+        recyclerViewApple.setAdapter(appleAdapter);
+        recyclerViewApple.invalidate();
+        recyclerViewApple.setNestedScrollingEnabled(false);
         mDatabase.child("ads").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if (dataSnapshot != null) {
+                if (dataSnapshot .exists()) {
                     AdDetails adDetails = dataSnapshot.getValue(AdDetails.class);
                     if (adDetails != null) {
                         if (adDetails.getAdStatus().equalsIgnoreCase("Active")) {
 
                             if (adDetails.getMainCategory().equalsIgnoreCase("Apple")) {
-                                appleAds.add(adDetails);
+                                if (adDetails.getCity().equalsIgnoreCase(SharedPrefs.getUserCity())) {
+                                    appleAds.add(adDetails);
 
-                                Collections.sort(appleAds, new Comparator<AdDetails>() {
-                                    @Override
-                                    public int compare(AdDetails listData, AdDetails t1) {
-                                        Long ob1 = listData.getViews();
-                                        Long ob2 = t1.getViews();
+                                    Collections.sort(appleAds, new Comparator<AdDetails>() {
+                                        @Override
+                                        public int compare(AdDetails listData, AdDetails t1) {
+                                            Long ob1 = listData.getViews();
+                                            Long ob2 = t1.getViews();
 
-                                        return ob2.compareTo(ob1);
+                                            return ob2.compareTo(ob1);
 
-                                    }
-                                });
-                                pgsBar1.setVisibility(View.GONE);
+                                        }
+                                    });
+                                    pgsBar1.setVisibility(View.GONE);
 
-                                appleAdapter.notifyDataSetChanged();
+                                    appleAdapter.notifyDataSetChanged();
 
+                                }
                             }
                         }
                     }
+                }else {
+                    pgsBar1.setVisibility(View.GONE);
+
+                    CommonUtils.showToast("No Data");
                 }
             }
 
@@ -372,7 +410,7 @@ public class HomePage extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
-        final ImageView app_logo=findViewById(R.id.app_logo);
+        final ImageView app_logo = findViewById(R.id.app_logo);
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home_page, menu);
         MenuItem mSearch = menu.findItem(R.id.action_search);
@@ -402,7 +440,7 @@ public class HomePage extends AppCompatActivity
                 intent.putExtra("minPrice", 0);
                 intent.putExtra("maxPrice", 9999999L);
                 intent.putExtra("location", "Lahore");
-                intent.putExtra("category", "All ads");
+                intent.putExtra("category", "All Brands");
                 startActivity(intent);
                 return false;
             }
@@ -443,30 +481,30 @@ public class HomePage extends AppCompatActivity
 
         if (id == R.id.nav_browse_ads) {
             // Handle the camera action
-            Intent i =new Intent(HomePage.this,MainActivity.class);
-            i.putExtra("category","All Ads");
+            Intent i = new Intent(HomePage.this, MainActivity.class);
+            i.putExtra("category", "All Ads");
 
             startActivity(i);
         } else if (id == R.id.nav_submit) {
-            if(SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")){
+            if (SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")) {
                 gotoSubmitAdActivity();
-            }else {
+            } else {
                 gotoLoginActivity(Constants.SUBMIT_ACTIVITY);
             }
 
         } else if (id == R.id.nav_my_ads) {
-            if(SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")){
-                Intent i=new Intent(HomePage.this,MyAds.class);
+            if (SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")) {
+                Intent i = new Intent(HomePage.this, MyAds.class);
                 startActivity(i);
-            }else {
+            } else {
                 gotoLoginActivity(Constants.MY_ADS_ACTIVITY);
             }
 
         } else if (id == R.id.nav_account) {
-            if(SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")){
-                Intent i=new Intent(HomePage.this,EditProfileInfo.class);
+            if (SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")) {
+                Intent i = new Intent(HomePage.this, EditProfileInfo.class);
                 startActivity(i);
-            }else {
+            } else {
                 gotoLoginActivity(Constants.MY_ACCOUNT_ACTIVITY);
             }
         }
@@ -491,6 +529,7 @@ public class HomePage extends AppCompatActivity
         }
         return true;
     }
+
     private void getPermissions() {
         int PERMISSION_ALL = 1;
         String[] PERMISSIONS = {android.Manifest.permission.WRITE_EXTERNAL_STORAGE,

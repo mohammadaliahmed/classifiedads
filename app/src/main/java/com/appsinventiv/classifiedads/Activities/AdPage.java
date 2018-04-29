@@ -29,6 +29,7 @@ import com.appsinventiv.classifiedads.R;
 import com.appsinventiv.classifiedads.Utils.CommonUtils;
 import com.appsinventiv.classifiedads.Utils.GetAdAddress;
 import com.appsinventiv.classifiedads.Utils.SharedPrefs;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -69,6 +70,7 @@ public class AdPage extends AppCompatActivity {
     ImageView back;
     String adBy;
     String address;
+    ImageView ad;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +80,7 @@ public class AdPage extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
+        ad=findViewById(R.id.ad);
         dotsIndicator = (DotsIndicator) findViewById(R.id.dots_indicator);
         back = findViewById(R.id.back);
 
@@ -105,6 +108,8 @@ public class AdPage extends AppCompatActivity {
         Intent intent = getIntent();
         adId = intent.getStringExtra("adId");
         init(adId);
+
+        Glide.with(this).load(SharedPrefs.getFeaturedAd()).into(ad);
 
         viewMore.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -29,6 +29,7 @@ import com.appsinventiv.classifiedads.Model.User;
 import com.appsinventiv.classifiedads.R;
 import com.appsinventiv.classifiedads.Utils.CommonUtils;
 import com.appsinventiv.classifiedads.Utils.CompressImage;
+import com.appsinventiv.classifiedads.Utils.GetAdAddress;
 import com.appsinventiv.classifiedads.Utils.NotificationAsync;
 import com.appsinventiv.classifiedads.Utils.SharedPrefs;
 import com.google.firebase.database.DataSnapshot;
@@ -256,7 +257,7 @@ public class SubmitAd extends AppCompatActivity implements AdObserver {
         Matisse.from(SubmitAd.this)
                 .choose(MimeType.allOf())
                 .countable(true)
-                .maxSelectable(5)
+                .maxSelectable(8)
                 .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
                 .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
                 .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
@@ -324,7 +325,9 @@ public class SubmitAd extends AppCompatActivity implements AdObserver {
 
 
     void submitAd() {
-
+        String ci=GetAdAddress.getCity(SubmitAd.this,latitude,longitude);
+        SharedPrefs.setUserCity(ci);
+        mDatabase.child("users").child(username).child("city").setValue(ci);
 
         String Adtitle = title.getText().toString(),
                 AdDescription = description.getText().toString();
@@ -334,8 +337,8 @@ public class SubmitAd extends AppCompatActivity implements AdObserver {
         mDatabase.child("users").child(username).child("adsPosted").child("" + time).setValue("" + time);
 
 
-        mDatabase.child("ads").child("" + time).setValue(new AdDetails(Adtitle, AdDescription, username, "" + phonenumber, city, ""
-                , "Active", mainCategory, childCategory,
+        mDatabase.child("ads").child("" + time).setValue(new AdDetails(Adtitle, AdDescription, username, "" + phonenumber, ci, ""
+                , "Pending", mainCategory, childCategory,
                 time, AdPrice, 0, latitude, longitude)).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {

@@ -34,6 +34,14 @@ public class SharedPrefs {
     }
 
 
+    public static String getFeaturedAd() {
+        return preferenceGetter("featured");
+    }
+
+    public static void setFeaturedAd(String value) {
+        preferenceSetter("featured", value);
+    }
+
 
     public static String getUserCity() {
         return preferenceGetter("city");

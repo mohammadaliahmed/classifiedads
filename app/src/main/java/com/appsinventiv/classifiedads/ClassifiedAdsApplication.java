@@ -12,11 +12,6 @@ import android.os.UserManager;
 public class ClassifiedAdsApplication  extends Application{
     private static ClassifiedAdsApplication instance;
 
-    public SharedPreferences getPrefs() {
-        return prefs;
-    }
-
-    private SharedPreferences prefs;
 
     public static ClassifiedAdsApplication getInstance() {
         return instance;

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.appsinventiv.classifiedads.Classes.PrefManager;
 import com.appsinventiv.classifiedads.Manifest;
@@ -35,13 +37,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 
 public class Register extends AppCompatActivity {
-    Button login, signup;
+    Button signup;
+    TextView login;
     DatabaseReference mDatabase;
     private PrefManager prefManager;
     ArrayList<String> userslist = new ArrayList<String>();
     EditText e_fullname, e_username, e_email, e_password, e_phone, e_city;
     String fullname, username, email, password, phone, city;
-    Double latitude, longitude;
+    Double longitude = 60.3323097, latitude = 30.0493247;
     int p;
 
     @Override
@@ -53,6 +56,7 @@ public class Register extends AppCompatActivity {
             launchHomeScreen();
             finish();
         }
+        getPermissions();
 
         mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
 
@@ -91,8 +95,11 @@ public class Register extends AppCompatActivity {
         e_phone = (EditText) findViewById(R.id.phone);
         e_city = (EditText) findViewById(R.id.city);
 
+
         signup = (Button) findViewById(R.id.signup);
-        login = (Button) findViewById(R.id.login);
+        login = findViewById(R.id.signin);
+        login.setPaintFlags(login.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -105,28 +112,27 @@ public class Register extends AppCompatActivity {
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (p == 1) {
 
+                    if (e_fullname.getText().toString().length() == 0) {
+                        e_fullname.setError("Please enter your name");
+                    } else if (e_username.getText().toString().length() == 0) {
+                        e_username.setError("Please enter username");
+                    } else if (e_email.getText().toString().length() == 0) {
+                        e_email.setError("Please enter your email");
+                    } else if (e_password.getText().toString().length() == 0) {
+                        e_password.setError("Please enter your password");
+                    } else if (e_phone.getText().toString().length() == 0) {
+                        e_phone.setError("Please enter your phone number");
+                    }
+                    else {
+                        Intent intent = new Intent(Register.this, GPSTrackerActivity.class);
+                        startActivityForResult(intent, 1);
 
-                if (e_fullname.getText().toString().length() == 0) {
-                    e_fullname.setError("Cannot be null");
-                } else if (e_username.getText().toString().length() == 0) {
-                    e_username.setError("Cannot be null");
-                } else if (e_email.getText().toString().length() == 0) {
-                    e_email.setError("Cannot be null");
-                } else if (e_password.getText().toString().length() == 0) {
-                    e_password.setError("Cannot be null");
-                } else if (e_phone.getText().toString().length() == 0) {
-                    e_phone.setError("Cannot be null");
-                }
-//                else if (e_city.getText().toString().length() == 0) {
-//                    e_city.setError("Cannot be null");
-//                }
-                else {
-                    if(p==1){
 
                     }
-
-
+                }else {
+                    getPermissions();
                 }
             }
         });
@@ -137,12 +143,16 @@ public class Register extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
-            if(data!=null) {
+
+            if (data != null) {
+
                 Bundle extras = data.getExtras();
                 longitude = extras.getDouble("Longitude");
                 latitude = extras.getDouble("Latitude");
+
                 registerUser();
             }
+
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -154,18 +164,18 @@ public class Register extends AppCompatActivity {
         password = e_password.getText().toString();
         phone = e_phone.getText().toString();
 //        city = e_city.getText().toString();
-        city = GetAdAddress.getCity(Register.this, latitude, longitude);
+            city = GetAdAddress.getCity(Register.this, latitude, longitude);
 
         if (userslist.contains("" + username)) {
             CommonUtils.showToast("Username is already taken\nPlease choose another");
         } else {
-            long time=System.currentTimeMillis();
+            long time = System.currentTimeMillis();
             int randomPIN = (int) (Math.random() * 900000) + 100000;
             username = username.trim();
             username = username.toLowerCase();
             mDatabase
                     .child(username)
-                    .setValue(new User(fullname, username, email, password, "" + phone, city, "no", "" + randomPIN, "no", SharedPrefs.getFcmKey(), latitude, longitude,time))
+                    .setValue(new User(fullname, username, email, password, "" + phone, city, "no", "" + randomPIN, "no", SharedPrefs.getFcmKey(), latitude, longitude, time))
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
@@ -195,13 +205,13 @@ public class Register extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-       Log.d("permissions",""+permissions[0]);
+        Log.d("permissions", "" + permissions[0]);
         if (permissions[0].equalsIgnoreCase("android.permission.ACCESS_FINE_LOCATION") && grantResults[0] == 0) {
-            p=1;
-        }else{
+            p = 1;
+        } else {
             boolean isgranted = true;
 
-            getPermissions();
+//            getPermissions();
             boolean showRationale = false;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                 showRationale = shouldShowRequestPermissionRationale(permissions[0]);
@@ -212,18 +222,19 @@ public class Register extends AppCompatActivity {
                 intent.setData(uri);
                 startActivityForResult(intent, 1);
                 isgranted = false;
-            }             CommonUtils.showToast("This app needs your location permission");
+            }
+            CommonUtils.showToast("This app needs your location permission");
         }
 
     }
 
-    public  boolean hasPermissions(Context context, String... permissions) {
+    public boolean hasPermissions(Context context, String... permissions) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
             for (String permission : permissions) {
                 if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
                     return false;
-                }else{
-                    p=1;
+                } else {
+                    p = 1;
                 }
             }
         }

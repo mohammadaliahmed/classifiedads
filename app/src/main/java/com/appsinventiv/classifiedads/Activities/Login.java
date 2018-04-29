@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.appsinventiv.classifiedads.Category.MainCategory;
@@ -34,17 +35,18 @@ public class Login extends AppCompatActivity {
     private PrefManager prefManager;
     ArrayList<String> userlist = new ArrayList<String>();
     String username, password;
-    Button login, register;
+    Button login;
+    TextView register;
     String takeUserToActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        register = (Button) findViewById(R.id.register);
-        login = (Button) findViewById(R.id.login);
-        e_username = (EditText) findViewById(R.id.username);
-        e_password = (EditText) findViewById(R.id.password);
+        register =  findViewById(R.id.register);
+        login =  findViewById(R.id.login);
+        e_username =  findViewById(R.id.username);
+        e_password =  findViewById(R.id.password);
         Intent i=getIntent();
         takeUserToActivity=i.getStringExtra("takeUserToActivity");
 
@@ -102,9 +104,9 @@ public class Login extends AppCompatActivity {
     private void userLogin() {
 
         if (e_username.getText().toString().length() == 0) {
-            e_username.setError("Cannot be null");
+            e_username.setError("Please enter username");
         } else if (e_password.getText().toString().length() == 0) {
-            e_password.setError("Cannot be null");
+            e_password.setError("Please enter your password");
         } else {
             username = e_username.getText().toString();
             password = e_password.getText().toString();
