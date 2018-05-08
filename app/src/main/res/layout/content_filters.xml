@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:padding="5dp"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.appsinventiv.classifiedads.Activities.Filters"
+    tools:context="com.appsinventiv.mobilemart.Activities.Filters"
     tools:showIn="@layout/activity_filters">
 
     <ScrollView

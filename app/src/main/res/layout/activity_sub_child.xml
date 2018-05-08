@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="5dp"
-    tools:context="com.appsinventiv.classifiedads.Category.SubChild">
+    tools:context="com.appsinventiv.mobilemart.Category.SubChild">
     <android.support.v7.widget.CardView
         app:cardCornerRadius="2dp"
         android:elevation="1dp"
