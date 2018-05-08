@@ -500,7 +500,16 @@ public class HomePage extends AppCompatActivity
                 gotoLoginActivity(Constants.MY_ADS_ACTIVITY);
             }
 
-        } else if (id == R.id.nav_account) {
+        }else if (id == R.id.nav_favourites) {
+            if (SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")) {
+                Intent i = new Intent(HomePage.this, FavouriteAds.class);
+                startActivity(i);
+            } else {
+                gotoLoginActivity(Constants.MY_FAVOURITES_ACTIVITY);
+            }
+
+        }
+        else if (id == R.id.nav_account) {
             if (SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")) {
                 Intent i = new Intent(HomePage.this, EditProfileInfo.class);
                 startActivity(i);

@@ -82,6 +82,7 @@ public class SubmitAd extends AppCompatActivity implements AdObserver {
     DatabaseReference mDatabase;
 
     ArrayList<String> imageUrl;
+    String adId;
     Double longitude = 60.3323097, latitude = 30.0493247;
 
     SharedPreferences userPref;
@@ -325,7 +326,9 @@ public class SubmitAd extends AppCompatActivity implements AdObserver {
 
 
     void submitAd() {
-        String ci=GetAdAddress.getCity(SubmitAd.this,latitude,longitude);
+        adId = Long.toHexString(Double.doubleToLongBits(Math.random()));
+
+        String ci = GetAdAddress.getCity(SubmitAd.this, latitude, longitude);
         SharedPrefs.setUserCity(ci);
         mDatabase.child("users").child(username).child("city").setValue(ci);
 
@@ -334,10 +337,10 @@ public class SubmitAd extends AppCompatActivity implements AdObserver {
         long AdPrice = Long.parseLong(price.getText().toString());
 
         String username = SharedPrefs.getUsername();
-        mDatabase.child("users").child(username).child("adsPosted").child("" + time).setValue("" + time);
+        mDatabase.child("users").child(username).child("adsPosted").child("" + adId).setValue("" + adId);
 
 
-        mDatabase.child("ads").child("" + time).setValue(new AdDetails(Adtitle, AdDescription, username, "" + phonenumber, ci, ""
+        mDatabase.child("ads").child("" + adId).setValue(new AdDetails(adId, Adtitle, AdDescription, username, "" + phonenumber, ci, ""
                 , "Pending", mainCategory, childCategory,
                 time, AdPrice, 0, latitude, longitude)).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -354,7 +357,7 @@ public class SubmitAd extends AppCompatActivity implements AdObserver {
         int count = 0;
         for (String img : imageUrl) {
 
-            putPictures(img, "" + time, count);
+            putPictures(img, "" + adId, count);
             count++;
             adObserver.onUploaded(count, imageUrl.size());
 
@@ -392,7 +395,7 @@ public class SubmitAd extends AppCompatActivity implements AdObserver {
 
                         Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
-                        mDatabase.child("ads").child("" + time).child("pictures")
+                        mDatabase.child("ads").child("" + adId).child("pictures")
                                 .push()
                                 .setValue(new PicturesModel("" + downloadUrl, count));
 

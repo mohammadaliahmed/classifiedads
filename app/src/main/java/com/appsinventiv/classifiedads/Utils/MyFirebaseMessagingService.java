@@ -1,6 +1,7 @@
 package com.appsinventiv.classifiedads.Utils;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -27,6 +29,9 @@ import java.util.Map;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     String msg;
     String title,message;
+    public static final String NOTIFICATION_CHANNEL_ID = "10001";
+    private NotificationManager mNotificationManager;
+    private NotificationCompat.Builder mBuilder;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -62,29 +67,37 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private void handleNow(String notificationTitle,String messageBody) {
 
-        Intent intent = new Intent(this, MyAds.class);
-
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         int num = (int) System.currentTimeMillis();
+        /**Creates an explicit intent for an Activity in your app**/
+        Intent resultIntent = new Intent(this, MyAds.class);
+        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        @SuppressLint("WrongConstant") PendingIntent resultPendingIntent=PendingIntent.getActivity(this,num,intent,Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(this,
+                0 /* Request code */, resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
 
-
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(notificationTitle)
+        mBuilder = new NotificationCompat.Builder(this);
+        mBuilder.setSmallIcon(R.mipmap.ic_launcher);
+        mBuilder.setContentTitle(notificationTitle)
                 .setContentText(messageBody)
-                .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setVibrate(new long[]{1000, 1000, 1000, 1000, 1000})
-                .setLights(Color.WHITE, 1000, 1000)
-                .setAutoCancel(true)
+                .setAutoCancel(false)
+                .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
                 .setContentIntent(resultPendingIntent);
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(num, notificationBuilder.build());
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "NOTIFICATION_CHANNEL_NAME", importance);
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.WHITE);
+            notificationChannel.enableVibration(true);
+            notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            assert mNotificationManager != null;
+            mBuilder.setChannelId(NOTIFICATION_CHANNEL_ID);
+            mNotificationManager.createNotificationChannel(notificationChannel);
+        }
+        assert mNotificationManager != null;
+        mNotificationManager.notify(num /* Request Code */, mBuilder.build());
     }
 }

@@ -155,6 +155,8 @@ public class Login extends AppCompatActivity {
             startActivity(new Intent(Login.this, EditProfileInfo.class));
         }else if(takeUserToActivity.equalsIgnoreCase(Constants.MY_ADS_ACTIVITY)){
             startActivity(new Intent(Login.this, MyAds.class));
+        }else if(takeUserToActivity.equalsIgnoreCase(Constants.MY_FAVOURITES_ACTIVITY)){
+            startActivity(new Intent(Login.this, FavouriteAds.class));
         }
         finish();
 

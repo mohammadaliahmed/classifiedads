@@ -62,9 +62,12 @@ public class SearchResults extends AppCompatActivity {
         searchTerm = intent.getString("searchTerm", "");
         maxPrice = intent.getLong("maxPrice", 9999999999L);
         minPrice = intent.getLong("minPrice", 0);
-        location = intent.getString("location", "");
+        location = intent.getString("location", SharedPrefs.getUserCity());
         category = intent.getString("category", "");
 
+        if (location.equalsIgnoreCase("Select One")) {
+            location = SharedPrefs.getUserCity();
+        }
 
         mDatabase = FirebaseDatabase.getInstance().getReference().child("ads");
         loadData();
@@ -165,10 +168,10 @@ public class SearchResults extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.add_ad) {
 
-            if(SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")){
+            if (SharedPrefs.getIsLoggedIn().equalsIgnoreCase("yes")) {
                 Intent i = new Intent(SearchResults.this, SubmitAd.class);
                 startActivity(i);
-            }else {
+            } else {
                 Intent i = new Intent(SearchResults.this, Login.class);
                 startActivity(i);
             }

@@ -73,7 +73,7 @@ public class SearchItemsAdapter extends RecyclerView.Adapter{
                 public void onClick(View view) {
                     Intent i =new Intent(ctx,AdPage.class);
 
-                    i.putExtra("adId",""+adId.getTime());
+                    i.putExtra("adId",""+adId.getAdId());
                     ctx.startActivity(i);
 //
                 }

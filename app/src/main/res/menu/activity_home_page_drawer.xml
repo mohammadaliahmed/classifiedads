@@ -29,12 +29,13 @@
             <item
                 android:id="@+id/nav_favourites"
                 android:icon="@drawable/ic_menu_gallery"
-                android:visible="false"
+                android:visible="true"
                 android:title="My Favourites" />
             <item
                 android:id="@+id/nav_account"
                 android:icon="@drawable/ic_my_account"
                 android:title="My Account" />
+
 
         </menu>
     </item>

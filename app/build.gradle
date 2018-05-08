@@ -49,6 +49,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.2'
     compile 'com.google.android.gms:play-services:12.0.1'
     compile 'com.google.android.gms:play-services-location:12.0.1'
+    compile 'com.github.jd-alexander:LikeButton:0.2.3'
 
 
 }

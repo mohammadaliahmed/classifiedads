@@ -74,7 +74,7 @@ public class AdStatusAdapter extends RecyclerView.Adapter<AdStatusAdapter.ViewHo
 //            itemList.remove(position);
         }
 
-        mDatabase.child("ads").child(""+model.getTime()).child("pictures").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("ads").child(""+model.getAdId()).child("pictures").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot childSnapshot:dataSnapshot.getChildren()){
@@ -98,7 +98,7 @@ public class AdStatusAdapter extends RecyclerView.Adapter<AdStatusAdapter.ViewHo
             @Override
             public void onClick(View view) {
                 Intent i=new Intent(context,AdPage.class);
-                i.putExtra("adId",""+model.getTime());
+                i.putExtra("adId",""+model.getAdId());
                 context.startActivity(i);
             }
         });
@@ -109,11 +109,11 @@ public class AdStatusAdapter extends RecyclerView.Adapter<AdStatusAdapter.ViewHo
                 if(statusChanged!=null){
                     if(b) {
                         model.setAdStatus("Active");
-                        statusChanged.onStatusChanged(compoundButton, position, "" + model.getTime(), "Active");
+                        statusChanged.onStatusChanged(compoundButton, position, "" + model.getAdId(), "Active");
 
                     }else{
                         model.setAdStatus("Inactive");
-                        statusChanged.onStatusChanged(compoundButton, position, "" + model.getTime(), "Inactive");
+                        statusChanged.onStatusChanged(compoundButton, position, "" + model.getAdId(), "Inactive");
 
                     }
                 }

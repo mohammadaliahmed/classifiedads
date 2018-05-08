@@ -16,6 +16,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.appsinventiv.classifiedads.Adapter.ItemAdapter;
 import com.appsinventiv.classifiedads.Model.AdDetails;
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     LinearLayoutManager layoutManager;
     ItemAdapter adapter;
     ArrayList<AdDetails> itemList = new ArrayList<>();
+
 
 
     SwipeRefreshLayout mSwipeRefreshLayout;
@@ -115,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadData() {
 
-        if (category == null || category.equalsIgnoreCase("") || category.equalsIgnoreCase("All Brands")) {
+        if (category == null || category.equalsIgnoreCase("") || category.equalsIgnoreCase("All Brands") || category.equalsIgnoreCase("All Ads")) {
             mDatabase.child("ads").limitToLast(200).addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -124,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
                         pgsBar.setVisibility(View.GONE);
                         if (model != null) {
                             if (model.getAdStatus().equalsIgnoreCase("Active")) {
-                                if (category == null || category.equalsIgnoreCase("") || category.equalsIgnoreCase("All Brands")) {
+                                if (model.getCity().equalsIgnoreCase(SharedPrefs.getUserCity())) {
                                     itemList.add(model);
                                     Collections.sort(itemList, new Comparator<AdDetails>() {
                                         @Override
@@ -141,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
                                     adapter.notifyDataSetChanged();
                                 }
                             }
+
                         }
                     }
                 }
@@ -165,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             });
-        } else if (category != null || !category.equalsIgnoreCase(""))  {
+        } else if (category != null || !category.equalsIgnoreCase("")) {
             mDatabase.child("ads").addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -173,21 +177,24 @@ public class MainActivity extends AppCompatActivity {
                     pgsBar.setVisibility(View.GONE);
                     if (model != null) {
                         if (model.getMainCategory().equalsIgnoreCase(category)) {
+                            if (model.getCity().equalsIgnoreCase(SharedPrefs.getUserCity())) {
 
-                            itemList.add(model);
-                            Collections.sort(itemList, new Comparator<AdDetails>() {
-                                @Override
-                                public int compare(AdDetails listData, AdDetails t1) {
-                                    Long ob1 = listData.getTime();
-                                    Long ob2 = t1.getTime();
 
-                                    return ob2.compareTo(ob1);
+                                itemList.add(model);
+                                Collections.sort(itemList, new Comparator<AdDetails>() {
+                                    @Override
+                                    public int compare(AdDetails listData, AdDetails t1) {
+                                        Long ob1 = listData.getTime();
+                                        Long ob2 = t1.getTime();
 
-                                }
-                            });
-                            pgsBar.setVisibility(View.GONE);
+                                        return ob2.compareTo(ob1);
 
-                            adapter.notifyDataSetChanged();
+                                    }
+                                });
+                                pgsBar.setVisibility(View.GONE);
+
+                                adapter.notifyDataSetChanged();
+                            }
                         }
                     }
                 }
@@ -214,7 +221,6 @@ public class MainActivity extends AppCompatActivity {
             });
 
         }
-
 
 
     }

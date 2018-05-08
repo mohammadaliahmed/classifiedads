@@ -60,7 +60,7 @@ public class HomepageSamsungAdapter extends RecyclerView.Adapter<HomepageSamsung
         String formatedPrice = formatter.format(model.getPrice());
         holder.adTitleView.setText(model.getTitle());
         holder.adPriceView.setText("Rs "+formatedPrice);
-        mDatabase.child("ads").child(""+model.getTime()).child("pictures").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("ads").child(""+model.getAdId()).child("pictures").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot childSnapshot:dataSnapshot.getChildren()){
@@ -84,7 +84,7 @@ public class HomepageSamsungAdapter extends RecyclerView.Adapter<HomepageSamsung
             public void onClick(View view) {
                 Intent i =new Intent(context,AdPage.class);
 
-                i.putExtra("adId",""+adId.getTime());
+                i.putExtra("adId",""+adId.getAdId());
                 context.startActivity(i);
 ////
             }

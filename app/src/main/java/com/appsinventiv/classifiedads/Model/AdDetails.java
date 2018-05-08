@@ -5,14 +5,15 @@ package com.appsinventiv.classifiedads.Model;
  */
 
 public class AdDetails {
-    String title, description, username, phone, city, picUrl, adStatus, mainCategory, childCategory;
+    String adId,title, description, username, phone, city, picUrl, adStatus, mainCategory, childCategory;
     long time, price, views;
     Double lattitude,longitude;
 
     public AdDetails() {
     }
 
-    public AdDetails(String title, String description, String username, String phone, String city, String picUrl, String adStatus, String mainCategory, String childCategory, long time, long price, long views, Double lattitude, Double longitude) {
+    public AdDetails(String adId, String title, String description, String username, String phone, String city, String picUrl, String adStatus, String mainCategory, String childCategory, long time, long price, long views, Double lattitude, Double longitude) {
+        this.adId = adId;
         this.title = title;
         this.description = description;
         this.username = username;
@@ -27,6 +28,14 @@ public class AdDetails {
         this.views = views;
         this.lattitude = lattitude;
         this.longitude = longitude;
+    }
+
+    public String getAdId() {
+        return adId;
+    }
+
+    public void setAdId(String adId) {
+        this.adId = adId;
     }
 
     public Double getLattitude() {

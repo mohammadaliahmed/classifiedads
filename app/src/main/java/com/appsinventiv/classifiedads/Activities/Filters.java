@@ -66,19 +66,19 @@ public class Filters extends AppCompatActivity {
         keyword = (EditText) findViewById(R.id.keyword);
         min = (EditText) findViewById(R.id.minprice);
         max = (EditText) findViewById(R.id.maxprice);
-        chooseCategory=findViewById(R.id.choose_category);
+        chooseCategory = findViewById(R.id.choose_category);
 
 
         chooseCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(Filters.this, MainCategory.class);
-                i.putExtra("fromFilters","abc");
+                i.putExtra("fromFilters", "abc");
                 startActivity(i);
             }
         });
 
-        final String[] items = new String[]{"Select One", "Islamabad", "Karachi", "Faisalabad", "Peshawar"};
+        final String[] items = new String[]{"Select one", "Lahore", "Islamabad", "Karachi", "Faisalabad", "Peshawar", "Multan"};
         Spinner spinner = (Spinner) findViewById(R.id.locationchoose);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, items);
@@ -88,7 +88,7 @@ public class Filters extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
-                items[0] = "Lahore";
+//                items[0] = "Multan";
 //                 items[position];
                 location = items[position];
 //                Toast.makeText(Filters.this, ""+items[position], Toast.LENGTH_SHORT).show();

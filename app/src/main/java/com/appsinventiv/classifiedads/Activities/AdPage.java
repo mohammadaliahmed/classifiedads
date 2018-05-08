@@ -3,8 +3,6 @@ package com.appsinventiv.classifiedads.Activities;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
@@ -15,42 +13,36 @@ import android.text.format.DateFormat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.appsinventiv.classifiedads.Adapter.AdPicturesAdapter;
 import com.appsinventiv.classifiedads.Adapter.SliderAdapter;
 import com.appsinventiv.classifiedads.Model.AdDetails;
 import com.appsinventiv.classifiedads.Model.PicturesModel;
+import com.appsinventiv.classifiedads.Model.User;
 import com.appsinventiv.classifiedads.R;
 import com.appsinventiv.classifiedads.Utils.CommonUtils;
 import com.appsinventiv.classifiedads.Utils.GetAdAddress;
 import com.appsinventiv.classifiedads.Utils.SharedPrefs;
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 public class AdPage extends AppCompatActivity {
     TextView title, price, price1, date1, category, time, city, description, views, username, viewMore, location;
@@ -59,18 +51,22 @@ public class AdPage extends AppCompatActivity {
 
     SliderAdapter adapter;
     long viewCount;
-    String adId;
+    String adId, adIdFromLink, adPicUrl;
     ProgressDialog progressDialog;
     LinearLayout call, sms, whatsapp;
     String phoneNumber;
-    Button favouriteAd;
     DatabaseReference mDatabase;
-    boolean liked = false;
     DotsIndicator dotsIndicator;
     ImageView back;
     String adBy;
-    String address;
     ImageView ad;
+    LikeButton likeButton;
+    LinearLayout favourite, report, shareAd;
+    ArrayList<String> userLikedAds = new ArrayList<>();
+    AdDetails adModel;
+    RelativeLayout wholeView;
+    ScrollView scrollView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,9 +76,13 @@ public class AdPage extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-        ad=findViewById(R.id.ad);
+        onNewIntent(getIntent());
+        ad = findViewById(R.id.ad);
         dotsIndicator = (DotsIndicator) findViewById(R.id.dots_indicator);
         back = findViewById(R.id.back);
+        report = findViewById(R.id.report);
+        wholeView=findViewById(R.id.wholeView);
+        scrollView=findViewById(R.id.scrollView2);
 
         progressDialog = new ProgressDialog(AdPage.this);
         title = findViewById(R.id.title);
@@ -93,7 +93,6 @@ public class AdPage extends AppCompatActivity {
         price1 = findViewById(R.id.price1);
         date1 = findViewById(R.id.date1);
         category = findViewById(R.id.category);
-        favouriteAd = findViewById(R.id.favouriteAd);
         viewMore = findViewById(R.id.viewMoreAds);
         description = findViewById(R.id.description);
         views = findViewById(R.id.views);
@@ -101,13 +100,35 @@ public class AdPage extends AppCompatActivity {
         sms = findViewById(R.id.sms);
         whatsapp = findViewById(R.id.whatsapp);
         location = findViewById(R.id.location);
+        likeButton = findViewById(R.id.heart_button);
+        favourite = findViewById(R.id.favourite);
+        shareAd=findViewById(R.id.sharead);
 
         mViewPager = (ViewPager) findViewById(R.id.viewPager);
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         Intent intent = getIntent();
         adId = intent.getStringExtra("adId");
-        init(adId);
+
+        if (adId == null) {
+            adId = adIdFromLink;
+            init(adId);
+        } else {
+            init(adId);
+        }
+
+        shareAd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(Intent.EXTRA_TEXT,
+                        "Please checkout this ad on Mobile Mart.\n\nhttp://mobilemart.pk/ad/"+adId);
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Whatsapp");
+                startActivity(Intent.createChooser(shareIntent, "Share ad via.."));
+            }
+        });
+
 
         Glide.with(this).load(SharedPrefs.getFeaturedAd()).into(ad);
 
@@ -120,14 +141,52 @@ public class AdPage extends AppCompatActivity {
             }
         });
 
-        favouriteAd.setOnClickListener(new View.OnClickListener() {
+        favourite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String username = SharedPrefs.getUsername();
-                mDatabase.child("users").child(username).child("likedAds").child("" + adId).setValue(adId).addOnSuccessListener(new OnSuccessListener<Void>() {
+                likeButton.performClick();
+
+            }
+        });
+        report.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(AdPage.this, ReportAd.class);
+                i.putExtra("adTtitle", adModel.getTitle());
+                i.putExtra("adId", adId);
+
+                i.putExtra("adPicUrl", adPicUrl);
+
+                startActivity(i);
+            }
+        });
+
+        likeButton.setOnLikeListener(new OnLikeListener() {
+            @Override
+            public void liked(LikeButton likeButton) {
+                userLikedAds.add(adId);
+                mDatabase.child("users").child(SharedPrefs.getUsername()).child("favourites").setValue(userLikedAds).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        CommonUtils.showToast("Marked as favourite");
+                        CommonUtils.showToast("Added to favourites");
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void unLiked(LikeButton likeButton) {
+                mDatabase.child("users").child(SharedPrefs.getUsername())
+                        .child("favourites").child("" + userLikedAds.indexOf(adId)).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        userLikedAds.remove(adId);
+                        CommonUtils.showToast("Removed from favourites");
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -146,7 +205,37 @@ public class AdPage extends AppCompatActivity {
             }
         });
 
+        getUserLikedAds();
+
     }
+
+    private void getUserLikedAds() {
+        mDatabase.child("users").child(SharedPrefs.getUsername()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot != null) {
+                    User user = dataSnapshot.getValue(User.class);
+                    if (user != null) {
+                        if (user.getFavourites() != null) {
+                            userLikedAds = user.getFavourites();
+                            if (user.getFavourites().contains(adId)) {
+                                likeButton.setLiked(true);
+                            } else {
+                                likeButton.setLiked(false);
+
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 
     public void init(String id) {
         mViewPager = findViewById(R.id.viewPager);
@@ -159,8 +248,11 @@ public class AdPage extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot != null) {
+                    wholeView.setVisibility(View.GONE);
+                    scrollView.setVisibility(View.VISIBLE);
                     AdDetails adDetails = dataSnapshot.getValue(AdDetails.class);
                     if (adDetails != null) {
+                        adModel = adDetails;
                         DecimalFormat formatter = new DecimalFormat("#,###,###");
                         String formatedPrice = formatter.format(adDetails.getPrice());
                         title.setText(adDetails.getTitle());
@@ -170,7 +262,7 @@ public class AdPage extends AppCompatActivity {
                         date1.setText(getFormattedDate(AdPage.this, adDetails.getTime()));
                         category.setText(adDetails.getMainCategory());
 
-                        location.setText(GetAdAddress.getAddress(AdPage.this,adDetails.getLattitude(),adDetails.getLongitude()));
+                        location.setText(GetAdAddress.getAddress(AdPage.this, adDetails.getLattitude(), adDetails.getLongitude()));
                         description.setText("" + adDetails.getDescription());
                         username.setText(adDetails.getUsername());
                         adBy = adDetails.getUsername();
@@ -180,8 +272,10 @@ public class AdPage extends AppCompatActivity {
                             PicturesModel model = childSnapshot.getValue(PicturesModel.class);
                             picUrls.add(model);
                             adapter.notifyDataSetChanged();
+                            if (model.getPosition() == 0) {
+                                adPicUrl = "" + model.getImageUrl();
+                            }
                         }
-
 
 
                         viewCount = adDetails.getViews();
@@ -293,26 +387,7 @@ public class AdPage extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_share) {
 
-            return true;
-        } else if (id == R.id.action_report) {
-
-            return true;
-        } else if (id == R.id.action_favourite) {
-//            R.id.action_favourite
-            if (!liked) {
-                item.setIcon(R.drawable.heart_fill);
-                liked = true;
-
-            } else {
-
-                item.setIcon(R.drawable.heart_empty);
-                liked = false;
-
-            }
-
-        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -322,6 +397,16 @@ public class AdPage extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.activity_ad_page, menu);
 //        menu.findItem(R.id.action_favourite).setIcon(R.drawable.heart_fill);
         return true;
+    }
+
+    protected void onNewIntent(Intent intent) {
+
+        String action = intent.getAction();
+        String data = intent.getDataString();
+        if (Intent.ACTION_VIEW.equals(action) && data != null) {
+            adIdFromLink = data.substring(data.lastIndexOf("/") + 1);
+            adId = adIdFromLink;
+        }
     }
 
 

@@ -173,9 +173,10 @@ public class Register extends AppCompatActivity {
             int randomPIN = (int) (Math.random() * 900000) + 100000;
             username = username.trim();
             username = username.toLowerCase();
+            ArrayList<String> favoruiteAds=new ArrayList<>();
             mDatabase
                     .child(username)
-                    .setValue(new User(fullname, username, email, password, "" + phone, city, "no", "" + randomPIN, "no", SharedPrefs.getFcmKey(), latitude, longitude, time))
+                    .setValue(new User(fullname, username, email, password, "" + phone, city, "no", "" + randomPIN, "no", SharedPrefs.getFcmKey(), latitude, longitude, time,favoruiteAds))
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {

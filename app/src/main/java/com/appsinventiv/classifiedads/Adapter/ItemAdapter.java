@@ -83,7 +83,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
                 holder.price.setText("Rs " + formattedPrice);
                 holder.time.setText(getFormattedDate(context, model.getTime()));
-                mDatabase.child("ads").child("" + model.getTime()).child("pictures").addListenerForSingleValueEvent(new ValueEventListener() {
+                mDatabase.child("ads").child("" + model.getAdId()).child("pictures").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
@@ -107,7 +107,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
                     @Override
                     public void onClick(View view) {
                         Intent i = new Intent(context, AdPage.class);
-                        i.putExtra("adId", "" + model.getTime());
+                        i.putExtra("adId", "" + model.getAdId());
                         context.startActivity(i);
                     }
                 });
